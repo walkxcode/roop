@@ -43,7 +43,7 @@ parser.add_argument('--all-faces', help='swap all faces in frame', dest='all_fac
 
 for name, value in vars(parser.parse_args()).items():
     args[name] = value
-    
+
 if '--all-faces' in sys.argv or '-a' in sys.argv:
     roop.globals.all_faces = True
 
@@ -190,8 +190,6 @@ def start():
     if not args['output_file']:
         target_path = args['target_path']
         args['output_file'] = rreplace(target_path, "/", "/swapped-", 1) if "/" in target_path else "swapped-" + target_path
-    global pool
-    pool = mp.Pool(args['cores_count'])
     target_path = args['target_path']
     test_face = get_face_single(cv2.imread(args['source_img']))
     if not test_face:
@@ -220,12 +218,12 @@ def start():
         shutil.copy(target_path, output_dir)
     status("extracting frames...")
     extract_frames(target_path, output_dir)
-    args['frame_paths'] = tuple(sorted(
+    frame_paths = tuple(sorted(
         glob.glob(output_dir + "/*.png"),
         key=lambda x: int(x.split(sep)[-1].replace(".png", ""))
     ))
     status("swapping in progress...")
-    start_processing()
+    process_video(args['source_img'], frame_paths)
     status("creating video...")
     create_video(video_name, exact_fps, output_dir)
     status("adding audio...")
@@ -234,9 +232,12 @@ def start():
     print("\n\nVideo saved as:", save_path, "\n\n")
     status("swap successful!")
 
+    if pool:
+        pool.close()
+        pool.join()
 
 def run():
-    global status_label, window
+    global status_label, window, limit_fps, all_faces, keep_frames
 
     pre_check()
     limit_resources()
