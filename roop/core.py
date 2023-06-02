@@ -7,7 +7,7 @@ import shutil
 import glob
 import argparse
 import multiprocessing as mp
-import os1
+import os
 import torch
 from pathlib import Path
 import tkinter as tk
