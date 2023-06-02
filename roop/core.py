@@ -66,7 +66,7 @@ def pre_check():
         quit('Python version is not supported - please upgrade to 3.9 or higher')
     if not shutil.which('ffmpeg'):
         quit('ffmpeg is not installed!')
-    model_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'inswapper_128.onnx')
+    model_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), '../inswapper_128.onnx')
     if not os.path.isfile(model_path):
         quit('File "inswapper_128.onnx" does not exist!')
     if '--gpu' in sys.argv:
