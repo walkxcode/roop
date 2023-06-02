@@ -100,7 +100,7 @@ def start_processing():
     if args['gpu'] or n < 2:
         process_video(args['source_img'], args["frame_paths"])
         return
-    # Multi thread if video frames to cpu cores ratio is 2
+    # Multi thread if total video frames to cpu cores ratio is greater than 2
     if n > 2:
         processes = []
         for i in range(0, len(frame_paths), n):
