@@ -238,7 +238,7 @@ def start():
     status("swap successful!")
 
 
-if __name__ == "__main__":
+def run():
     global status_label, window
 
     pre_check()
