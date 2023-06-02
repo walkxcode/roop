@@ -7,7 +7,7 @@ import shutil
 import glob
 import argparse
 import multiprocessing as mp
-import os
+import os1
 import torch
 from pathlib import Path
 import tkinter as tk
@@ -43,6 +43,9 @@ parser.add_argument('--all-faces', help='swap all faces in frame', dest='all_fac
 
 for name, value in vars(parser.parse_args()).items():
     args[name] = value
+    
+if '--all-faces' in sys.argv or '-a' in sys.argv:
+    roop.globals.all_faces = True
 
 sep = "/"
 if os.name == "nt":
@@ -86,6 +89,8 @@ def pre_check():
                 quit(f"CUDNN version {CUDNN_VERSION} is not supported - please downgrade to 8.9.1")
     else:
         roop.globals.providers = ['CPUExecutionProvider']
+    if '--all-faces' in sys.argv or '-a' in sys.argv:
+        roop.globals.all_faces = True
 
 
 def start_processing():
@@ -95,14 +100,6 @@ def start_processing():
     if args['gpu'] or n < 2:
         process_video(args['source_img'], args["frame_paths"])
         return
-    processes = []
-    for i in range(0, len(frame_paths), n):
-        p = pool.apply_async(process_video, args=(args['source_img'], frame_paths[i:i+n],))
-        processes.append(p)
-    for p in processes:
-        p.get()
-    pool.close()
-    pool.join()
     # Multi thread if video frames to cpu cores ratio is 2
     if n > 2:
         processes = []
@@ -211,7 +208,7 @@ def start():
         quit()
     video_name_full = target_path.split("/")[-1]
     video_name = os.path.splitext(video_name_full)[0]
-    output_dir = os.path.dirname(target_path) + "/" + video_name if os.path.dirname(target_path) else video_name
+    output_dir = os.path.dirname(target_path) + "/" + video_name
     Path(output_dir).mkdir(exist_ok=True)
     status("detecting video's FPS...")
     fps, exact_fps = detect_fps(target_path)
