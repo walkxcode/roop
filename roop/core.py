@@ -31,20 +31,23 @@ args = {}
 
 signal.signal(signal.SIGINT, lambda signal_number, frame: quit())
 parser = argparse.ArgumentParser()
-parser.add_argument('-f', '--face', help='use this face', dest='source_img')
-parser.add_argument('-t', '--target', help='replace this face', dest='target_path')
-parser.add_argument('-o', '--output', help='save output to this file', dest='output_file')
-parser.add_argument('--gpu', help='use gpu', dest='gpu', action='store_true', default=False)
-parser.add_argument('--keep-fps', help='maintain original fps', dest='keep_fps', action='store_true', default=False)
-parser.add_argument('--keep-frames', help='keep frames directory', dest='keep_frames', action='store_true', default=False)
-parser.add_argument('--max-memory', help='maximum amount of RAM in GB to be used', type=int)
-parser.add_argument('--max-cores', help='number of cores to be use for CPU mode', dest='cores_count', type=int, default=max(psutil.cpu_count() - 2, 2))
-parser.add_argument('--all-faces', help='swap all faces in frame', dest='all_faces', action='store_true', default=False)
+parser.add_argument('-f', '--face', help='Use this face', dest='source_img')
+parser.add_argument('-t', '--target', help='Replace this face', dest='target_path')
+parser.add_argument('-o', '--output', help='Save output to this file', dest='output_file')
+parser.add_argument('--gpu', help='Choose your GPU vendor', dest='gpu', choices=['amd', 'nvidia'])
+parser.add_argument('--keep-fps', help='Maintain original FPS', dest='keep_fps', action='store_true', default=False)
+parser.add_argument('--keep-frames', help='Keep frames directory', dest='keep_frames', action='store_true', default=False)
+parser.add_argument('--max-memory', help='Maximum amount of RAM in GB to be used', type=int)
+parser.add_argument('--max-cores', help='Number of cores to be use for CPU mode', dest='cores_count', type=int, default=max(psutil.cpu_count() - 2, 2))
+parser.add_argument('--all-faces', help='Swap all faces in frame', dest='all_faces', action='store_true', default=False)
 
 for name, value in vars(parser.parse_args()).items():
     args[name] = value
 
-if '--all-faces' in sys.argv or '-a' in sys.argv:
+if 'gpu' in args:
+    roop.globals.gpu = args['gpu']
+
+if 'all-faces' in args:
     roop.globals.all_faces = True
 
 sep = "/"
@@ -72,32 +75,31 @@ def pre_check():
     model_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), '../inswapper_128.onnx')
     if not os.path.isfile(model_path):
         quit('File "inswapper_128.onnx" does not exist!')
-    if '--gpu' in sys.argv:
-        NVIDIA_PROVIDERS = ['CUDAExecutionProvider', 'TensorrtExecutionProvider']
-        if len(list(set(roop.globals.providers) - set(NVIDIA_PROVIDERS))) == 1:
-            CUDA_VERSION = torch.version.cuda
-            CUDNN_VERSION = torch.backends.cudnn.version()
-            if not torch.cuda.is_available() or not CUDA_VERSION:
-                quit("You are using --gpu flag but CUDA isn't available or properly installed on your system.")
-            if CUDA_VERSION > '11.8':
-                quit(f"CUDA version {CUDA_VERSION} is not supported - please downgrade to 11.8")
-            if CUDA_VERSION < '11.4':
-                quit(f"CUDA version {CUDA_VERSION} is not supported - please upgrade to 11.8")
-            if CUDNN_VERSION < 8220:
-                quit(f"CUDNN version {CUDNN_VERSION} is not supported - please upgrade to 8.9.1")
-            if CUDNN_VERSION > 8910:
-                quit(f"CUDNN version {CUDNN_VERSION} is not supported - please downgrade to 8.9.1")
+    if roop.globals.gpu == 'amd':
+        if 'ROCMExecutionProvider' not in roop.globals.providers:
+            quit("You are using --gpu=amd flag but ROCM isn't available or properly installed on your system.")
+    if roop.globals.gpu == 'nvidia':
+        CUDA_VERSION = torch.version.cuda
+        CUDNN_VERSION = torch.backends.cudnn.version()
+        if not torch.cuda.is_available() or not CUDA_VERSION:
+            quit("You are using --gpu=nvidia flag but CUDA isn't available or properly installed on your system.")
+        if CUDA_VERSION > '11.8':
+            quit(f"CUDA version {CUDA_VERSION} is not supported - please downgrade to 11.8")
+        if CUDA_VERSION < '11.4':
+            quit(f"CUDA version {CUDA_VERSION} is not supported - please upgrade to 11.8")
+        if CUDNN_VERSION < 8220:
+            quit(f"CUDNN version {CUDNN_VERSION} is not supported - please upgrade to 8.9.1")
+        if CUDNN_VERSION > 8910:
+            quit(f"CUDNN version {CUDNN_VERSION} is not supported - please downgrade to 8.9.1")
     else:
         roop.globals.providers = ['CPUExecutionProvider']
-    if '--all-faces' in sys.argv or '-a' in sys.argv:
-        roop.globals.all_faces = True
 
 
 def start_processing():
     frame_paths = args["frame_paths"]
     n = len(frame_paths) // (args['cores_count'])
     # Single thread
-    if args['gpu'] or n < 2:
+    if roop.globals.gpu == 'amd' or roop.globals.gpu == 'nvidia' or n < 2:
         process_video(args['source_img'], args["frame_paths"])
         return
     # Multi thread if total video frames to cpu cores ratio is greater than 2
