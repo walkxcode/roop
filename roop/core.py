@@ -4,7 +4,6 @@ import platform
 import signal
 import sys
 import shutil
-import glob
 import argparse
 import os
 import torch
@@ -15,7 +14,6 @@ from opennsfw2 import predict_video_frames, predict_image
 from tkinter.filedialog import asksaveasfilename
 import cv2
 import threading
-from threadpoolctl import threadpool_limits
 from PIL import Image, ImageTk
 import roop.globals
 from roop.swapper import process_video, process_img
@@ -218,10 +216,6 @@ def start():
     save_path = args['output_file'] if args['output_file'] else output_dir + "/" + video_name + ".mp4"
     print("\n\nVideo saved as:", save_path, "\n\n")
     status("swap successful!")
-
-    if pool:
-        pool.close()
-        pool.join()
 
 def run():
     global status_label, window, limit_fps, all_faces, keep_frames
