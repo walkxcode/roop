@@ -4,6 +4,7 @@ import cv2
 import insightface
 import roop.globals
 from roop.analyser import get_face_single, get_face_many
+import onnxruntime
 
 FACE_SWAPPER = None
 
@@ -11,8 +12,14 @@ FACE_SWAPPER = None
 def get_face_swapper():
     global FACE_SWAPPER
     if FACE_SWAPPER is None:
+        session_options = onnxruntime.SessionOptions()
+        if roop.globals.gpu_vendor is not None:
+            session_options.intra_op_num_threads = roop.globals.gpu_threads
+        else:
+            session_options.intra_op_num_threads = roop.globals.cpu_threads
+        session_options.execution_mode = onnxruntime.ExecutionMode.ORT_PARALLEL
         model_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), '../inswapper_128.onnx')
-        FACE_SWAPPER = insightface.model_zoo.get_model(model_path, providers=roop.globals.providers)
+        FACE_SWAPPER = insightface.model_zoo.get_model(model_path, providers=roop.globals.providers, session_options=session_options)
     return FACE_SWAPPER
 
 
@@ -22,8 +29,8 @@ def swap_face_in_frame(source_face, target_face, frame):
     return frame
 
 
-def process_faces(source_face, frame, progress, all_faces=False):
-    if all_faces:
+def process_faces(source_face, frame, progress):
+    if roop.globals.all_faces:
         many_faces = get_face_many(frame)
         if many_faces:
             for face in many_faces:
@@ -49,7 +56,7 @@ def process_video(source_img, frame_paths):
         for frame_path in frame_paths:
             frame = cv2.imread(frame_path)
             try:
-                result = process_faces(source_face, frame, progress, roop.globals.all_faces)
+                result = process_faces(source_face, frame, progress)
                 cv2.imwrite(frame_path, result)
             except Exception:
                 progress.set_postfix(status='E', refresh=True)

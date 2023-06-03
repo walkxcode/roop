@@ -49,19 +49,21 @@ Additional command-line arguments for Roop are as follows:
 
 ```shell
 Options:
-  -h, --help                   Show this help message and exit
+  -h, --help                      Show this help message and exit
   -f SOURCE_IMG,
-     --face SOURCE_IMG         Use this face
+     --face SOURCE_IMG            Use this face
   -t TARGET_PATH,
-     --target TARGET_PATH      Replace this face
+     --target TARGET_PATH         Replace this face
   -o OUTPUT_FILE,
-     --output OUTPUT_FILE      Save output to this file
-  --gpu                        Use GPU
-  --keep-fps                   Maintain original FPS
-  --keep-frames                Keep frames directory
-  --max-memory MAX_MEMORY      Maximum amount of RAM in GB to be used
-  --max-cores CORES_COUNT      Number of cores to be used for CPU mode
-  --all-faces                  Swap all faces in frame
+     --output OUTPUT_FILE         Save output to this file
+  --gpu                           Use GPU
+  --keep-fps                      Maintain original FPS
+  --keep-frames                   Keep frames directory
+  --all-faces                     Swap all faces in frame
+  --max-memory MAX_MEMORY         Maximum amount of RAM in GB to be used
+  --cpu-threads CPU_THREADS       Number of threads to use for CPU mode
+  --gpu-threads GPU_THREADS       Number of threads to use for GPU mode
+  --gpu-vendor {amd,intel,nvidia} Choose your GPU vendor
 ```
 
 If you prefer to use the CLI mode, you can use the `-f/--face` argument to run the program in CLI mode.
