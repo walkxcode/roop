@@ -31,12 +31,12 @@ jobs:
           python-version: 3.9
       - run: pip install -r requirements.txt
       - run: pip install gdown
-      - run: gdown https://drive.google.com/uc?id=14JzEMo8ScLinvBkl7QEvYvFEi7EBXNAt
+      - run: gdown https://drive.google.com/uc?id=13QpWFWJ37EB-nHrEOY64CEtQWY-tz7DZ
       - run: ./run.py -f=.github/examples/face.jpg -t=.github/examples/target.mp4 -o=.github/examples/output.mp4
       - run: ffmpeg -i .github/examples/snapshot.mp4 -i .github/examples/output.mp4 -filter_complex "psnr" -f null /dev/null
       - run: cp .github/examples/output.mp4 docs/examples/latest-test.mp4
       - name: Upload output artifact
-        if: github.ref == 'refs/heads/main'  # Only runs if the branch is 'main'
+        if: github.ref == 'refs/heads/main' # Only runs if the branch is 'main'
         uses: actions/upload-artifact@v2
         with:
           name: output
@@ -46,7 +46,7 @@ jobs:
           git config --global user.name "Roop CI"
           git config --global user.email "noreply@example.com"
       - name: Commit and Push
-        if: github.ref == 'refs/heads/main'  # Only runs if the branch is 'main'
+        if: github.ref == 'refs/heads/main' # Only runs if the branch is 'main'
         run: |
           git add docs/examples/latest-test.mp4 || true
           git commit -m ":white_check_mark: Test completed! Updates latest-test.mp4" || true

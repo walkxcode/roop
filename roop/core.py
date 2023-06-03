@@ -6,7 +6,6 @@ import sys
 import shutil
 import glob
 import argparse
-import multiprocessing as mp
 import os
 import torch
 from pathlib import Path
@@ -14,9 +13,9 @@ import tkinter as tk
 from tkinter import filedialog
 from opennsfw2 import predict_video_frames, predict_image
 from tkinter.filedialog import asksaveasfilename
-import psutil
 import cv2
 import threading
+from threadpoolctl import threadpool_limits
 from PIL import Image, ImageTk
 import roop.globals
 from roop.swapper import process_video, process_img
@@ -26,29 +25,34 @@ from roop.analyser import get_face_single
 if 'ROCMExecutionProvider' in roop.globals.providers:
     del torch
 
-pool = None
-args = {}
-
 signal.signal(signal.SIGINT, lambda signal_number, frame: quit())
 parser = argparse.ArgumentParser()
 parser.add_argument('-f', '--face', help='Use this face', dest='source_img')
 parser.add_argument('-t', '--target', help='Replace this face', dest='target_path')
 parser.add_argument('-o', '--output', help='Save output to this file', dest='output_file')
-parser.add_argument('--gpu', help='Choose your GPU vendor', dest='gpu', choices=['amd', 'nvidia'])
 parser.add_argument('--keep-fps', help='Maintain original FPS', dest='keep_fps', action='store_true', default=False)
 parser.add_argument('--keep-frames', help='Keep frames directory', dest='keep_frames', action='store_true', default=False)
-parser.add_argument('--max-memory', help='Maximum amount of RAM in GB to be used', type=int)
-parser.add_argument('--max-cores', help='Number of cores to be use for CPU mode', dest='cores_count', type=int, default=max(psutil.cpu_count() - 2, 2))
 parser.add_argument('--all-faces', help='Swap all faces in frame', dest='all_faces', action='store_true', default=False)
+parser.add_argument('--max-memory', help='Maximum amount of RAM in GB to be used', dest='max_memory', type=int)
+parser.add_argument('--cpu-threads', help='Number of threads to be use for CPU mode', dest='cpu_threads', type=int)
+parser.add_argument('--gpu-threads', help='Number of threads to be use for GPU mode', dest='gpu_threads', type=int)
+parser.add_argument('--gpu-vendor', help='Choose your GPU vendor', dest='gpu_vendor', choices=['amd', 'intel', 'nvidia'])
 
+args = {}
 for name, value in vars(parser.parse_args()).items():
     args[name] = value
 
-if 'gpu' in args:
-    roop.globals.gpu = args['gpu']
-
-if 'all-faces' in args:
+if 'all_faces' in args:
     roop.globals.all_faces = True
+
+if 'cpu_threads' in args and args['cpu_threads']:
+    roop.globals.cpu_threads = args['cpu_threads']
+
+if 'gpu_threads' in args and args['gpu_threads']:
+    roop.globals.gpu_threads = args['gpu_threads']
+
+if 'gpu_vendor' in args and args['gpu_vendor']:
+    roop.globals.gpu_vendor = args['gpu_vendor']
 
 sep = "/"
 if os.name == "nt":
@@ -75,10 +79,10 @@ def pre_check():
     model_path = os.path.join(os.path.abspath(os.path.dirname(__file__)), '../inswapper_128.onnx')
     if not os.path.isfile(model_path):
         quit('File "inswapper_128.onnx" does not exist!')
-    if roop.globals.gpu == 'amd':
+    if roop.globals.gpu_vendor == 'amd':
         if 'ROCMExecutionProvider' not in roop.globals.providers:
             quit("You are using --gpu=amd flag but ROCM isn't available or properly installed on your system.")
-    if roop.globals.gpu == 'nvidia':
+    if roop.globals.gpu_vendor == 'nvidia':
         CUDA_VERSION = torch.version.cuda
         CUDNN_VERSION = torch.backends.cudnn.version()
         if not torch.cuda.is_available() or not CUDA_VERSION:
@@ -93,25 +97,6 @@ def pre_check():
             quit(f"CUDNN version {CUDNN_VERSION} is not supported - please downgrade to 8.9.1")
     else:
         roop.globals.providers = ['CPUExecutionProvider']
-
-
-def start_processing():
-    frame_paths = args["frame_paths"]
-    n = len(frame_paths) // (args['cores_count'])
-    # Single thread
-    if roop.globals.gpu == 'amd' or roop.globals.gpu == 'nvidia' or n < 2:
-        process_video(args['source_img'], args["frame_paths"])
-        return
-    # Multi thread if total video frames to cpu cores ratio is greater than 2
-    if n > 2:
-        processes = []
-        for i in range(0, len(frame_paths), n):
-            p = pool.apply_async(process_video, args=(args['source_img'], frame_paths[i:i+n],))
-            processes.append(p)
-        for p in processes:
-            p.get()
-        pool.close()
-        pool.join()
 
 
 def preview_image(image_path):
@@ -225,7 +210,7 @@ def start():
         key=lambda x: int(x.split(sep)[-1].replace(".png", ""))
     ))
     status("swapping in progress...")
-    process_video(args['source_img'], frame_paths)
+    process_video(args['source_img'], args["frame_paths"])
     status("creating video...")
     create_video(video_name, exact_fps, output_dir)
     status("adding audio...")
@@ -243,7 +228,6 @@ def run():
 
     pre_check()
     limit_resources()
-
     if args['source_img']:
         args['cli_mode'] = True
         start()
