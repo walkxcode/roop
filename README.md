@@ -61,9 +61,9 @@ Options:
   --keep-frames                   Keep frames directory
   --all-faces                     Swap all faces in frame
   --max-memory MAX_MEMORY         Maximum amount of RAM in GB to be used
-  --cpu-threads CPU_THREADS       Number of threads to use for CPU mode
-  --gpu-threads GPU_THREADS       Number of threads to use for GPU mode
-  --gpu-vendor {amd,intel,nvidia} Choose your GPU vendor
+  --cpu-cores CPU_CORES       Number of cores to use for CPU mode
+  --gpu-threads GPU_THREADS       Number of threads to use for the GPU mode
+  --gpu-vendor {apple,amd,intel,nvidia} Choose your GPU vendor
 ```
 
 If you prefer to use the CLI mode, you can use the `-f/--face` argument to run the program in CLI mode.
