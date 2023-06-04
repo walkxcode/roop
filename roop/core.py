@@ -34,7 +34,7 @@ parser.add_argument('--keep-frames', help='Keep frames directory', dest='keep_fr
 parser.add_argument('--all-faces', help='Swap all faces in frame', dest='all_faces', action='store_true', default=False)
 parser.add_argument('--max-memory', help='Maximum amount of RAM in GB to be used', dest='max_memory', type=int)
 parser.add_argument('--cpu-cores', help='Number of CPU cores to use', dest='cpu_cores', type=int, default=max(psutil.cpu_count() / 2, 1))
-parser.add_argument('--gpu-threads', help='Number of threads to be use for GPU mode', dest='gpu_threads', type=int)
+parser.add_argument('--gpu-threads', help='Number of threads to use for the GPU mode', dest='gpu_threads', type=int)
 parser.add_argument('--gpu-vendor', help='Choose your GPU vendor', dest='gpu_vendor', choices=['apple', 'amd', 'intel', 'nvidia'])
 
 args = parser.parse_known_args()[0]

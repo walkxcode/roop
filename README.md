@@ -49,20 +49,20 @@ Additional command-line arguments for Roop are as follows:
 
 ```shell
 Options:
-  -h, --help                      Show this help message and exit
+  -h, --help                            Show this help message and exit
   -f SOURCE_IMG,
-     --face SOURCE_IMG            Use this face
+     --face SOURCE_IMG                  Use this face
   -t TARGET_PATH,
-     --target TARGET_PATH         Replace this face
+     --target TARGET_PATH               Replace this face
   -o OUTPUT_FILE,
-     --output OUTPUT_FILE         Save output to this file
-  --gpu                           Use GPU
-  --keep-fps                      Maintain original FPS
-  --keep-frames                   Keep frames directory
-  --all-faces                     Swap all faces in frame
-  --max-memory MAX_MEMORY         Maximum amount of RAM in GB to be used
-  --cpu-cores CPU_CORES       Number of cores to use for CPU mode
-  --gpu-threads GPU_THREADS       Number of threads to use for the GPU mode
+     --output OUTPUT_FILE               Save output to this file
+  --gpu                                 Use GPU
+  --keep-fps                            Maintain original FPS
+  --keep-frames                         Keep frames directory
+  --all-faces                           Swap all faces in frame
+  --max-memory MAX_MEMORY               Maximum amount of RAM in GB to be used
+  --cpu-cores CPU_CORES                 Number of cores to use for CPU mode
+  --gpu-threads GPU_THREADS             Number of threads to use for the GPU mode
   --gpu-vendor {apple,amd,intel,nvidia} Choose your GPU vendor
 ```
 
