@@ -1,7 +1,6 @@
 import tkinter as tk
 from typing import Any, Callable, Tuple
 from PIL import Image, ImageTk
-import webbrowser
 from tkinter import filedialog
 from tkinter.filedialog import asksaveasfilename
 import threading
@@ -9,7 +8,6 @@ import threading
 from roop.utils import is_img
 
 max_preview_size = 800
-
 
 def create_preview(parent):
     global preview_image_frame, preview_frame_slider, test_button
@@ -19,10 +17,10 @@ def create_preview(parent):
     preview_window.protocol("WM_DELETE_WINDOW", hide_preview)
     preview_window.withdraw()
     preview_window.title("Preview")
-    preview_window.configure(bg="red")
+    preview_window.configure(bg="#1E1E1E")
     preview_window.resizable(width=False, height=False)
 
-    frame = tk.Frame(preview_window, background="#2d3436")
+    frame = tk.Frame(preview_window, background="#292929")
     frame.pack(fill='both', side='left', expand='True')
 
     # Preview image
@@ -30,7 +28,7 @@ def create_preview(parent):
     preview_image_frame.pack(side='top')
 
     # Bottom frame
-    buttons_frame = tk.Frame(frame, background="#2d3436")
+    buttons_frame = tk.Frame(frame, background="#292929")
     buttons_frame.pack(fill='both', side='bottom')
 
     current_frame = tk.IntVar()
@@ -39,11 +37,17 @@ def create_preview(parent):
         from_=0,
         to=0,
         orient='horizontal',
-        variable=current_frame
+        variable=current_frame,
+        bg="#292929",
+        fg="#CCCCCC",
+        troughcolor="#292929",
+        highlightbackground="#FF4081",
+        highlightcolor="#FF4081",
+        highlightthickness=2
     )
     preview_frame_slider.pack(fill='both', side='left', expand='True')
 
-    test_button = tk.Button(buttons_frame, text="Test", bg="#f1c40f", relief="flat", width=15, borderwidth=0, highlightthickness=0)
+    test_button = tk.Button(buttons_frame, text="Render Frame", bg="#FFEB3B", fg="#1E1E1E", relief="flat", width=15, borderwidth=0, highlightthickness=0)
     test_button.pack(side='right', fill='y')
     return preview_window
 
@@ -157,7 +161,8 @@ def create_button(parent, text, command):
         parent,
         text=text,
         command=command,
-        bg="#f1c40f",
+        bg="#FFEB3B",
+        fg="#1E1E1E",
         relief="flat",
         borderwidth=0,
         highlightthickness=0
@@ -167,12 +172,13 @@ def create_button(parent, text, command):
 def create_background_button(parent, text, command):
     button = create_button(parent, text, command)
     button.configure(
-        bg="#2d3436",
-        fg="#74b9ff",
-        highlightthickness=4,
-        highlightbackground="#74b9ff",
-        activebackground="#74b9ff",
-        borderwidth=4
+        bg="#1E1E1E",
+        fg="#FF4081",
+        activebackground="#FF4081",
+        activeforeground="#1E1E1E",
+        highlightbackground="#FF4081",
+        highlightcolor="#FF4081",
+        highlightthickness=2
     )
     return button
 
@@ -182,14 +188,12 @@ def create_check(parent, text, variable, command):
         parent,
         anchor="w",
         relief="groove",
-        activebackground="#2d3436",
-        activeforeground="#74b9ff",
+        activebackground="#1E1E1E",
+        activeforeground="#FF4081",
         selectcolor="black",
         text=text,
-        fg="#dfe6e9",
-        borderwidth=0,
-        highlightthickness=0,
-        bg="#2d3436",
+        fg="#CCCCCC",
+        bg="#1E1E1E",
         variable=variable,
         command=command
     )
@@ -247,7 +251,7 @@ def init(
     window = tk.Tk()
     window.geometry("600x700")
     window.title("roop")
-    window.configure(bg="#2d3436")
+    window.configure(bg="#1E1E1E")
     window.resizable(width=False, height=False)
 
     preview_visible = tk.BooleanVar(window, False)
@@ -257,17 +261,12 @@ def init(
     # Preview window
     preview = create_preview(window)
 
-    # Contact information
-    support_link = tk.Label(window, text="Donate to project <3", fg="#fd79a8", bg="#2d3436", cursor="hand2", font=("Arial", 8))
-    support_link.place(x=180,y=20,width=250,height=30)
-    support_link.bind("<Button-1>", lambda e: webbrowser.open("https://github.com/sponsors/s0md3v"))
-
-    left_frame = tk.Frame(window)
+    left_frame = tk.Frame(window, bg="#292929")
     left_frame.place(x=60, y=100, width=180, height=180)
     face_label = tk.Label(left_frame)
     face_label.pack(fill='both', side='top', expand=True)
 
-    right_frame = tk.Frame(window)
+    right_frame = tk.Frame(window, bg="#292929")
     right_frame.place(x=360, y=100, width=180, height=180)
     target_label = tk.Label(right_frame)
     target_label.pack(fill='both', side='top', expand=True)
@@ -309,7 +308,7 @@ def init(
     preview_button.place(x=310,y=560,width=120,height=49)
 
     # Status label
-    status_label = tk.Label(window, width=580, justify="center", text="Status: waiting for input...", fg="#2ecc71", bg="#2d3436")
-    status_label.place(x=10,y=640,width=580,height=30)
+    status_label = tk.Label(window, text="Status: Ready!", bg="#1E1E1E", fg="#FF4081")
+    status_label.place(x=60,y=630,width=480,height=31)
 
     return window
