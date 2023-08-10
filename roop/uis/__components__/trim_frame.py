@@ -9,39 +9,45 @@ from roop.uis import core as ui
 from roop.uis.typing import Update
 from roop.utilities import is_video
 
-TRIM_FRAME_START_NUMBER: Optional[gradio.Number] = None
-TRIM_FRAME_END_NUMBER: Optional[gradio.Number] = None
+TRIM_FRAME_START_SLIDER: Optional[gradio.Slider] = None
+TRIM_FRAME_END_SLIDER: Optional[gradio.Slider] = None
 
 
 def render() -> None:
-    global TRIM_FRAME_START_NUMBER
-    global TRIM_FRAME_END_NUMBER
+    global TRIM_FRAME_START_SLIDER
+    global TRIM_FRAME_END_SLIDER
 
     with gradio.Box():
-        trim_frame_start_number_args: Dict[str, Any] = {
+        trim_frame_start_slider_args: Dict[str, Any] = {
             'label': 'TRIM FRAME START',
             'value': roop.globals.trim_frame_start,
+            'step': 1,
             'visible': False
         }
-        trim_frame_end_number_args: Dict[str, Any] = {
+        trim_frame_end_slider_args: Dict[str, Any] = {
             'label': 'TRIM FRAME END',
             'value': roop.globals.trim_frame_end,
+            'step': 1,
             'visible': False
         }
         if is_video(roop.globals.target_path):
-            trim_frame_start_number_args['visible'] = True
-            trim_frame_end_number_args['visible'] = True
+            video_frame_total = get_video_frame_total(roop.globals.target_path)
+            trim_frame_start_slider_args['maximum'] = video_frame_total
+            trim_frame_start_slider_args['visible'] = True
+            trim_frame_end_slider_args['value'] = video_frame_total
+            trim_frame_end_slider_args['maximum'] = video_frame_total
+            trim_frame_end_slider_args['visible'] = True
         with gradio.Row():
-            TRIM_FRAME_START_NUMBER = gradio.Number(**trim_frame_start_number_args)
-            TRIM_FRAME_END_NUMBER = gradio.Number(**trim_frame_end_number_args)
+            TRIM_FRAME_START_SLIDER = gradio.Slider(**trim_frame_start_slider_args)
+            TRIM_FRAME_END_SLIDER = gradio.Slider(**trim_frame_end_slider_args)
 
 
 def listen() -> None:
     target_file = ui.get_component('target_file')
     if target_file:
-        target_file.change(remote_update, outputs=[TRIM_FRAME_START_NUMBER, TRIM_FRAME_END_NUMBER])
-    TRIM_FRAME_START_NUMBER.change(lambda value: update_number('trim_frame_start', int(value)), inputs=TRIM_FRAME_START_NUMBER, outputs=TRIM_FRAME_START_NUMBER)
-    TRIM_FRAME_END_NUMBER.change(lambda value: update_number('trim_frame_end', int(value)), inputs=TRIM_FRAME_END_NUMBER, outputs=TRIM_FRAME_END_NUMBER)
+        target_file.change(remote_update, outputs=[TRIM_FRAME_START_SLIDER, TRIM_FRAME_END_SLIDER])
+    TRIM_FRAME_START_SLIDER.change(lambda value: update_number('trim_frame_start', int(value)), inputs=TRIM_FRAME_START_SLIDER, outputs=TRIM_FRAME_START_SLIDER)
+    TRIM_FRAME_END_SLIDER.change(lambda value: update_number('trim_frame_end', int(value)), inputs=TRIM_FRAME_END_SLIDER, outputs=TRIM_FRAME_END_SLIDER)
 
 
 def remote_update() -> Tuple[Update, Update]:

@@ -45,6 +45,10 @@ def get_theme() -> gradio.Theme:
         primary_hue=gradio.themes.colors.red,
         secondary_hue=gradio.themes.colors.gray,
         font=gradio.themes.GoogleFont('Inter')
+    ).set(
+        background_fill_primary='*neutral_50',
+        block_label_text_size='*text_sm',
+        block_title_text_size='*text_sm'
     )
 
 
