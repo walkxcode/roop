@@ -51,7 +51,7 @@ def listen() -> None:
 
 
 def remote_update() -> Tuple[Update, Update]:
-    sleep(0.5)
+    sleep(0.1)
     if is_video(roop.globals.target_path):
         video_frame_total = get_video_frame_total(roop.globals.target_path)
         roop.globals.trim_frame_start = 0

@@ -54,7 +54,6 @@ def listen() -> None:
     component_names: List[ComponentName] = [
         'source_file',
         'target_file',
-        'reference_face_position_slider',
         'similar_face_distance_slider',
         'frame_processors_checkbox_group',
         'many_faces_checkbox'
@@ -63,10 +62,13 @@ def listen() -> None:
         component = ui.get_component(component_name)
         if component:
             component.change(update, inputs=PREVIEW_FRAME_SLIDER, outputs=[PREVIEW_IMAGE, PREVIEW_FRAME_SLIDER])
+    reference_face_position_gallery = ui.get_component('reference_face_position_gallery')
+    if reference_face_position_gallery:
+        reference_face_position_gallery.select(update, inputs=PREVIEW_FRAME_SLIDER, outputs=[PREVIEW_IMAGE, PREVIEW_FRAME_SLIDER])
 
 
 def update(frame_number: int = 0) -> Tuple[Update, Update]:
-    sleep(0.5)
+    sleep(0.1)
     if is_image(roop.globals.target_path):
         target_frame = cv2.imread(roop.globals.target_path)
         preview_frame = get_preview_frame(target_frame)

@@ -6,7 +6,7 @@ ComponentName = Literal[
     'source_file',
     'target_file',
     'preview_frame_slider',
-    'reference_face_position_slider',
+    'reference_face_position_gallery',
     'similar_face_distance_slider',
     'frame_processors_checkbox_group',
     'many_faces_checkbox'
