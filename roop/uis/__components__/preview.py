@@ -51,23 +51,27 @@ def render() -> None:
 
 def listen() -> None:
     PREVIEW_FRAME_SLIDER.change(update, inputs=PREVIEW_FRAME_SLIDER, outputs=[PREVIEW_IMAGE, PREVIEW_FRAME_SLIDER])
-    component_names: List[ComponentName] = [
+    update_component_names: List[ComponentName] = [
         'source_file',
         'target_file',
         'face_recognition_dropdown',
         'reference_face_distance_slider',
-        'face_analyser_direction_dropdown',
-        'face_analyser_age_dropdown',
-        'face_analyser_gender_dropdown',
         'frame_processors_checkbox_group'
     ]
-    for component_name in component_names:
+    for component_name in update_component_names:
         component = ui.get_component(component_name)
         if component:
             component.change(update, inputs=PREVIEW_FRAME_SLIDER, outputs=[PREVIEW_IMAGE, PREVIEW_FRAME_SLIDER])
-    reference_face_position_gallery = ui.get_component('reference_face_position_gallery')
-    if reference_face_position_gallery:
-        reference_face_position_gallery.select(update, inputs=PREVIEW_FRAME_SLIDER, outputs=[PREVIEW_IMAGE, PREVIEW_FRAME_SLIDER])
+    select_component_names: List[ComponentName] = [
+        'reference_face_position_gallery',
+        'face_analyser_direction_dropdown',
+        'face_analyser_age_dropdown',
+        'face_analyser_gender_dropdown'
+    ]
+    for component_name in select_component_names:
+        component = ui.get_component(component_name)
+        if component:
+            component.select(update, inputs=PREVIEW_FRAME_SLIDER, outputs=[PREVIEW_IMAGE, PREVIEW_FRAME_SLIDER])
 
 
 def update(frame_number: int = 0) -> Tuple[Update, Update]:

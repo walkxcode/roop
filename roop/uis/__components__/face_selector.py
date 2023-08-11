@@ -96,6 +96,9 @@ def listen() -> None:
     FACE_ANALYSER_DIRECTION_DROPDOWN.select(lambda value: update_dropdown('face_analyser_direction', value), inputs=FACE_ANALYSER_DIRECTION_DROPDOWN, outputs=FACE_ANALYSER_DIRECTION_DROPDOWN)
     FACE_ANALYSER_AGE_DROPDOWN.select(lambda value: update_dropdown('face_analyser_age', value), inputs=FACE_ANALYSER_AGE_DROPDOWN, outputs=FACE_ANALYSER_AGE_DROPDOWN)
     FACE_ANALYSER_GENDER_DROPDOWN.select(lambda value: update_dropdown('face_analyser_gender', value), inputs=FACE_ANALYSER_GENDER_DROPDOWN, outputs=FACE_ANALYSER_GENDER_DROPDOWN)
+    FACE_ANALYSER_DIRECTION_DROPDOWN.select(update_face_reference_position, outputs=REFERENCE_FACE_POSITION_GALLERY)
+    FACE_ANALYSER_AGE_DROPDOWN.select(update_face_reference_position, outputs=REFERENCE_FACE_POSITION_GALLERY)
+    FACE_ANALYSER_GENDER_DROPDOWN.select(update_face_reference_position, outputs=REFERENCE_FACE_POSITION_GALLERY)
 
 
 def update_face_recognition(face_recognition: FaceRecognition) -> Tuple[Update, Update]:
