@@ -1,4 +1,4 @@
-from typing import List, Optional
+from typing import List, Optional, Tuple
 from time import sleep
 
 import cv2
@@ -8,18 +8,26 @@ import roop.globals
 from roop.capturer import get_video_frame
 from roop.face_analyser import get_many_faces
 from roop.face_reference import clear_face_reference
-from roop.typing import Frame
+from roop.typing import Frame, FaceRecognition
 from roop.uis import core as ui
 from roop.uis.typing import ComponentName, Update
 from roop.utilities import is_image, is_video
 
+FACE_RECOGNITION_DROPDOWN: Optional[gradio.Dropdown] = None
 REFERENCE_FACE_POSITION_GALLERY: Optional[gradio.Gallery] = None
-SIMILAR_FACE_DISTANCE_SLIDER: Optional[gradio.Slider] = None
+REFERENCE_FACE_DISTANCE_SLIDER: Optional[gradio.Slider] = None
+FACE_ANALYSER_DIRECTION_DROPDOWN: Optional[gradio.Dropdown] = None
+FACE_ANALYSER_AGE_DROPDOWN: Optional[gradio.Dropdown] = None
+FACE_ANALYSER_GENDER_DROPDOWN: Optional[gradio.Dropdown] = None
 
 
 def render() -> None:
+    global FACE_RECOGNITION_DROPDOWN
     global REFERENCE_FACE_POSITION_GALLERY
-    global SIMILAR_FACE_DISTANCE_SLIDER
+    global REFERENCE_FACE_DISTANCE_SLIDER
+    global FACE_ANALYSER_DIRECTION_DROPDOWN
+    global FACE_ANALYSER_AGE_DROPDOWN
+    global FACE_ANALYSER_GENDER_DROPDOWN
 
     with gradio.Box():
         reference_face_gallery_args = {
@@ -28,7 +36,7 @@ def render() -> None:
             'object_fit': 'cover',
             'columns': 10,
             'allow_preview': False,
-            'visible': True
+            'visible': 'reference' in roop.globals.face_recognition
         }
         if is_image(roop.globals.target_path):
             reference_frame = cv2.imread(roop.globals.target_path)
@@ -36,20 +44,47 @@ def render() -> None:
         if is_video(roop.globals.target_path):
             reference_frame = get_video_frame(roop.globals.target_path, roop.globals.reference_frame_number)
             reference_face_gallery_args['value'] = extract_gallery_frames(reference_frame)
-        REFERENCE_FACE_POSITION_GALLERY = gradio.Gallery(**reference_face_gallery_args)
-        SIMILAR_FACE_DISTANCE_SLIDER = gradio.Slider(
-            label='SIMILAR FACE DISTANCE',
-            value=roop.globals.similar_face_distance,
-            maximum=2,
-            step=0.05
+        FACE_RECOGNITION_DROPDOWN = gradio.Dropdown(
+            label='FACE RECOGNITION',
+            choices=['reference', 'many'],
+            value=roop.globals.face_recognition
         )
+        REFERENCE_FACE_POSITION_GALLERY = gradio.Gallery(**reference_face_gallery_args)
+        REFERENCE_FACE_DISTANCE_SLIDER = gradio.Slider(
+            label='REFERENCE FACE DISTANCE',
+            value=roop.globals.reference_face_distance,
+            maximum=2,
+            step=0.05,
+            visible='reference' in roop.globals.face_recognition
+        )
+        with gradio.Row():
+            FACE_ANALYSER_DIRECTION_DROPDOWN = gradio.Dropdown(
+                label='FACE ANALYSER DIRECTION',
+                choices=['none', 'left-right', 'right-left', 'top-bottom', 'bottom-top', 'small-large', 'large-small'],
+                value=roop.globals.face_analyser_direction or 'none'
+            )
+            FACE_ANALYSER_AGE_DROPDOWN = gradio.Dropdown(
+                label='FACE ANALYSER AGE',
+                choices=['none', 'children', 'teenager', 'adult', 'senior'],
+                value=roop.globals.face_analyser_age or 'none'
+            )
+            FACE_ANALYSER_GENDER_DROPDOWN = gradio.Dropdown(
+                label='FACE ANALYSER GENDER',
+                choices=['none', 'male', 'female'],
+                value=roop.globals.face_analyser_gender or 'none'
+            )
+        ui.register_component('face_recognition_dropdown', FACE_RECOGNITION_DROPDOWN)
         ui.register_component('reference_face_position_gallery', REFERENCE_FACE_POSITION_GALLERY)
-        ui.register_component('similar_face_distance_slider', SIMILAR_FACE_DISTANCE_SLIDER)
+        ui.register_component('reference_face_distance_slider', REFERENCE_FACE_DISTANCE_SLIDER)
+        ui.register_component('face_analyser_direction_dropdown', FACE_ANALYSER_DIRECTION_DROPDOWN)
+        ui.register_component('face_analyser_age_dropdown', FACE_ANALYSER_AGE_DROPDOWN)
+        ui.register_component('face_analyser_gender_dropdown', FACE_ANALYSER_GENDER_DROPDOWN)
 
 
 def listen() -> None:
+    FACE_RECOGNITION_DROPDOWN.select(update_face_recognition, inputs=FACE_RECOGNITION_DROPDOWN, outputs=[REFERENCE_FACE_POSITION_GALLERY, REFERENCE_FACE_DISTANCE_SLIDER])
     REFERENCE_FACE_POSITION_GALLERY.select(clear_and_update_face_reference_position)
-    SIMILAR_FACE_DISTANCE_SLIDER.change(update_similar_face_distance, inputs=SIMILAR_FACE_DISTANCE_SLIDER)
+    REFERENCE_FACE_DISTANCE_SLIDER.change(update_reference_face_distance, inputs=REFERENCE_FACE_DISTANCE_SLIDER)
     component_names: List[ComponentName] = [
         'target_file',
         'preview_frame_slider'
@@ -58,6 +93,18 @@ def listen() -> None:
         component = ui.get_component(component_name)
         if component:
             component.change(update_face_reference_position, outputs=REFERENCE_FACE_POSITION_GALLERY)
+    FACE_ANALYSER_DIRECTION_DROPDOWN.select(lambda value: update_dropdown('face_analyser_direction', value), inputs=FACE_ANALYSER_DIRECTION_DROPDOWN, outputs=FACE_ANALYSER_DIRECTION_DROPDOWN)
+    FACE_ANALYSER_AGE_DROPDOWN.select(lambda value: update_dropdown('face_analyser_age', value), inputs=FACE_ANALYSER_AGE_DROPDOWN, outputs=FACE_ANALYSER_AGE_DROPDOWN)
+    FACE_ANALYSER_GENDER_DROPDOWN.select(lambda value: update_dropdown('face_analyser_gender', value), inputs=FACE_ANALYSER_GENDER_DROPDOWN, outputs=FACE_ANALYSER_GENDER_DROPDOWN)
+
+
+def update_face_recognition(face_recognition: FaceRecognition) -> Tuple[Update, Update]:
+    if face_recognition == 'reference':
+        roop.globals.face_recognition = face_recognition
+        return gradio.update(visible=True), gradio.update(visible=True)
+    if face_recognition == 'many':
+        roop.globals.face_recognition = face_recognition
+        return gradio.update(visible=False), gradio.update(visible=False)
 
 
 def clear_and_update_face_reference_position(event: gradio.SelectData) -> Update:
@@ -80,9 +127,9 @@ def update_face_reference_position(reference_face_position: int = 0) -> Update:
     return gradio.update(value=None)
 
 
-def update_similar_face_distance(similar_face_distance: float) -> Update:
-    roop.globals.similar_face_distance = similar_face_distance
-    return gradio.update(value=similar_face_distance)
+def update_reference_face_distance(reference_face_distance: float) -> Update:
+    roop.globals.reference_face_distance = reference_face_distance
+    return gradio.update(value=reference_face_distance)
 
 
 def extract_gallery_frames(reference_frame: Frame) -> List[Frame]:
@@ -93,3 +140,11 @@ def extract_gallery_frames(reference_frame: Frame) -> List[Frame]:
         crop_frame = reference_frame[start_y:end_y, start_x:end_x]
         crop_frames.append(ui.normalize_frame(crop_frame))
     return crop_frames
+
+
+def update_dropdown(name: str, value: str) -> Update:
+    if value == 'none':
+        setattr(roop.globals, name, None)
+    else:
+        setattr(roop.globals, name, value)
+    return gradio.update(value=value)

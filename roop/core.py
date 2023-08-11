@@ -14,6 +14,8 @@ import shutil
 import argparse
 import onnxruntime
 import tensorflow
+
+
 import roop.globals
 import roop.metadata
 from roop.predictor import predict_image, predict_video
@@ -35,10 +37,13 @@ def parse_args() -> None:
     program.add_argument('--keep-fps', help='keep target fps', dest='keep_fps', action='store_true')
     program.add_argument('--keep-temp', help='keep temporary frames', dest='keep_temp', action='store_true')
     program.add_argument('--skip-audio', help='skip target audio', dest='skip_audio', action='store_true')
-    program.add_argument('--many-faces', help='process every face', dest='many_faces', action='store_true')
+    program.add_argument('--face-recognition', help='face recognition method', dest='face_recognition', default='reference', choices=['reference', 'many'])
+    program.add_argument('--face-analyser-direction', help='direction used for the face analyser', dest='face_analyser_direction', choices=['left-right', 'right-left', 'top-bottom', 'bottom-top', 'small-large', 'large-small'])
+    program.add_argument('--face-analyser-age', help='age used for the face analyser', dest='face_analyser_age', choices=['children', 'teenager', 'adult', 'senior'])
+    program.add_argument('--face-analyser-gender', help='gender used for the face analyser', dest='face_analyser_gender', choices=['male', 'female'])
     program.add_argument('--reference-face-position', help='position of the reference face', dest='reference_face_position', type=int, default=0)
+    program.add_argument('--reference-face-distance', help='distance between reference face and target face', dest='reference_face_distance', type=float, default=0.85)
     program.add_argument('--reference-frame-number', help='number of the reference frame', dest='reference_frame_number', type=int, default=0)
-    program.add_argument('--similar-face-distance', help='face distance used for recognition', dest='similar_face_distance', type=float, default=0.85)
     program.add_argument('--trim-frame-start', help='start frame use for extraction', dest='trim_frame_start', type=int)
     program.add_argument('--trim-frame-end', help='end frame use for extraction', dest='trim_frame_end', type=int)
     program.add_argument('--temp-frame-format', help='image format used for frame extraction', dest='temp_frame_format', default='jpg', choices=['jpg', 'png'])
@@ -62,10 +67,13 @@ def parse_args() -> None:
     roop.globals.keep_fps = args.keep_fps
     roop.globals.keep_temp = args.keep_temp
     roop.globals.skip_audio = args.skip_audio
-    roop.globals.many_faces = args.many_faces
+    roop.globals.face_recognition = args.face_recognition
+    roop.globals.face_analyser_direction = args.face_analyser_direction
+    roop.globals.face_analyser_age = args.face_analyser_age
+    roop.globals.face_analyser_gender = args.face_analyser_gender
     roop.globals.reference_face_position = args.reference_face_position
     roop.globals.reference_frame_number = args.reference_frame_number
-    roop.globals.similar_face_distance = args.similar_face_distance
+    roop.globals.reference_face_distance = args.reference_face_distance
     roop.globals.trim_frame_start = args.trim_frame_start
     roop.globals.trim_frame_end = args.trim_frame_end
     roop.globals.temp_frame_format = args.temp_frame_format

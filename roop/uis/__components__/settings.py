@@ -14,7 +14,6 @@ EXECUTION_QUEUE_COUNT_SLIDER: Optional[gradio.Slider] = None
 KEEP_FPS_CHECKBOX: Optional[gradio.Checkbox] = None
 KEEP_TEMP_CHECKBOX: Optional[gradio.Checkbox] = None
 SKIP_AUDIO_CHECKBOX: Optional[gradio.Checkbox] = None
-MANY_FACES_CHECKBOX: Optional[gradio.Checkbox] = None
 
 
 def render() -> None:
@@ -25,7 +24,6 @@ def render() -> None:
     global KEEP_FPS_CHECKBOX
     global KEEP_TEMP_CHECKBOX
     global SKIP_AUDIO_CHECKBOX
-    global MANY_FACES_CHECKBOX
 
     with gradio.Column():
         with gradio.Box():
@@ -68,11 +66,6 @@ def render() -> None:
                 label='SKIP AUDIO',
                 value=roop.globals.skip_audio
             )
-            MANY_FACES_CHECKBOX = gradio.Checkbox(
-                label='MANY FACES',
-                value=roop.globals.many_faces
-            )
-            ui.register_component('many_faces_checkbox', MANY_FACES_CHECKBOX)
 
 
 def listen() -> None:
@@ -83,7 +76,6 @@ def listen() -> None:
     KEEP_FPS_CHECKBOX.change(lambda value: update_checkbox('keep_fps', value), inputs=KEEP_FPS_CHECKBOX, outputs=KEEP_FPS_CHECKBOX)
     KEEP_TEMP_CHECKBOX.change(lambda value: update_checkbox('keep_temp', value), inputs=KEEP_TEMP_CHECKBOX, outputs=KEEP_TEMP_CHECKBOX)
     SKIP_AUDIO_CHECKBOX.change(lambda value: update_checkbox('skip_audio', value), inputs=SKIP_AUDIO_CHECKBOX, outputs=SKIP_AUDIO_CHECKBOX)
-    MANY_FACES_CHECKBOX.change(lambda value: update_checkbox('many_faces', value), inputs=MANY_FACES_CHECKBOX, outputs=MANY_FACES_CHECKBOX)
 
 
 def update_frame_processors(frame_processors: List[str]) -> Update:

@@ -54,9 +54,12 @@ def listen() -> None:
     component_names: List[ComponentName] = [
         'source_file',
         'target_file',
-        'similar_face_distance_slider',
-        'frame_processors_checkbox_group',
-        'many_faces_checkbox'
+        'face_recognition_dropdown',
+        'reference_face_distance_slider',
+        'face_analyser_direction_dropdown',
+        'face_analyser_age_dropdown',
+        'face_analyser_gender_dropdown',
+        'frame_processors_checkbox_group'
     ]
     for component_name in component_names:
         component = ui.get_component(component_name)
@@ -86,11 +89,11 @@ def extract_preview_frame(temp_frame: Frame) -> Frame:
     if predict_frame(temp_frame):
         destroy()
     source_face = get_one_face(cv2.imread(roop.globals.source_path)) if roop.globals.source_path else None
-    if not roop.globals.many_faces and not get_face_reference():
+    if 'reference' in roop.globals.face_recognition and not get_face_reference():
         reference_frame = get_video_frame(roop.globals.target_path, roop.globals.reference_frame_number)
         reference_face = get_one_face(reference_frame, roop.globals.reference_face_position)
         set_face_reference(reference_face)
-    reference_face = get_face_reference() if not roop.globals.many_faces else None
+    reference_face = get_face_reference() if 'reference' in roop.globals.face_recognition else None
     for frame_processor in roop.globals.frame_processors:
         frame_processor_module = load_frame_processor_module(frame_processor)
         if frame_processor_module.pre_start():

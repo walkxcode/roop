@@ -29,29 +29,33 @@ Start the program with arguments:
 ```
 python run.py [options]
 
--h, --help                                                                 show this help message and exit
--s SOURCE_PATH, --source SOURCE_PATH                                       select an source image
--t TARGET_PATH, --target TARGET_PATH                                       select an target image or video
--o OUTPUT_PATH, --output OUTPUT_PATH                                       select output file or directory
---frame-processors FRAME_PROCESSORS [FRAME_PROCESSORS ...]                 list of available frame processors (choices: face_swapper, face_enhancer, frame_enhancer, ...)
---ui-layouts UI_LAYOUTS [UI_LAYOUTS ...]                                   list of available ui layouts (choices: default, ...)
---keep-fps                                                                 keep target fps
---keep-temp                                                                keep temporary frames
---skip-audio                                                               skip target audio
---many-faces                                                               process every face
---reference-face-position REFERENCE_FACE_POSITION                          position of the reference face
---reference-frame-number REFERENCE_FRAME_NUMBER                            number of the reference frame
---similar-face-distance SIMILAR_FACE_DISTANCE                              face distance used for recognition
---temp-frame-format {jpg,png}                                              image format used for frame extraction
---temp-frame-quality [0-100]                                               image quality used for frame extraction
---output-video-encoder {libx264,libx265,libvpx-vp9,h264_nvenc,hevc_nvenc}  encoder used for the output video
---output-video-quality [0-100]                                             quality used for the output video
---max-memory MAX_MEMORY                                                    maximum amount of RAM in GB
---execution-providers {cpu} [{cpu} ...]                                    list of available execution providers (choices: cpu, ...)
---execution-thread-count EXECUTION_THREAD_COUNT                            number of execution threads
---execution-queue-count EXECUTION_QUEUE_COUNT                              number of execution queries
--v, --version                                                              show program's version number and exit
-
+-h, --help                                                                                       show this help message and exit
+-s SOURCE_PATH, --source SOURCE_PATH                                                             select an source image
+-t TARGET_PATH, --target TARGET_PATH                                                             select an target image or video
+-o OUTPUT_PATH, --output OUTPUT_PATH                                                             select output file or directory
+--frame-processors FRAME_PROCESSORS [FRAME_PROCESSORS ...]                                       list of available frame processors (choices: face_swapper, face_enhancer, frame_enhancer, ...)
+--ui-layouts UI_LAYOUTS [UI_LAYOUTS ...]                                                         list of available ui layouts (choices: default, ...)
+--keep-fps                                                                                       keep target fps
+--keep-temp                                                                                      keep temporary frames
+--skip-audio                                                                                     skip target audio
+--face-recognition {reference,many}                                                              face recognition method
+--face-analyser-direction {left-right,right-left,top-bottom,bottom-top,small-large,large-small}  direction used for the face analyser
+--face-analyser-age {children,teenager,adult,senior}                                             age used for the face analyser
+--face-analyser-gender {male,female}                                                             gender used for the face analyser
+--reference-face-position REFERENCE_FACE_POSITION                                                position of the reference face
+--reference-face-distance REFERENCE_FACE_DISTANCE                                                distance between reference face and target face
+--reference-frame-number REFERENCE_FRAME_NUMBER                                                  number of the reference frame
+--trim-frame-start TRIM_FRAME_START                                                              start frame use for extraction
+--trim-frame-end TRIM_FRAME_END                                                                  end frame use for extraction
+--temp-frame-format {jpg,png}                                                                    image format used for frame extraction
+--temp-frame-quality [0-100]                                                                     image quality used for frame extraction
+--output-video-encoder {libx264,libx265,libvpx-vp9,h264_nvenc,hevc_nvenc}                        encoder used for the output video
+--output-video-quality [0-100]                                                                   quality used for the output video
+--max-memory MAX_MEMORY                                                                          maximum amount of RAM in GB
+--execution-providers {cpu} [{cpu} ...]                                                          list of available execution providers (choices: cpu, ...)
+--execution-thread-count EXECUTION_THREAD_COUNT                                                  number of execution threads
+--execution-queue-count EXECUTION_QUEUE_COUNT                                                    number of execution queries
+-v, --version                                                                                    show program's version number and exit
 ```
 
 
