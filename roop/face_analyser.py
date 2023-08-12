@@ -80,13 +80,13 @@ def sort_by_direction(faces: List[Face], direction: FaceAnalyserDirection) -> Li
 def filter_by_age(faces: List[Face], age: FaceAnalyserAge) -> List[Face]:
     filter_faces = []
     for face in faces:
-        if face['age'] < 10 and age == 'children':
+        if face['age'] < 13 and age == 'child':
             filter_faces.append(face)
-        elif face['age'] < 20 and age == 'teenager':
+        elif face['age'] < 19 and age == 'teen':
             filter_faces.append(face)
         elif face['age'] < 60 and age == 'adult':
             filter_faces.append(face)
-        elif face['age'] < 100 and age == 'senior':
+        elif face['age'] > 59 and age == 'senior':
             filter_faces.append(face)
     return filter_faces
 

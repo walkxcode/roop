@@ -1,4 +1,4 @@
-from typing import List, Optional, Tuple
+from typing import List, Optional, Tuple, Any, Dict
 from time import sleep
 
 import cv2
@@ -16,21 +16,15 @@ from roop.utilities import is_image, is_video
 FACE_RECOGNITION_DROPDOWN: Optional[gradio.Dropdown] = None
 REFERENCE_FACE_POSITION_GALLERY: Optional[gradio.Gallery] = None
 REFERENCE_FACE_DISTANCE_SLIDER: Optional[gradio.Slider] = None
-FACE_ANALYSER_DIRECTION_DROPDOWN: Optional[gradio.Dropdown] = None
-FACE_ANALYSER_AGE_DROPDOWN: Optional[gradio.Dropdown] = None
-FACE_ANALYSER_GENDER_DROPDOWN: Optional[gradio.Dropdown] = None
 
 
 def render() -> None:
     global FACE_RECOGNITION_DROPDOWN
     global REFERENCE_FACE_POSITION_GALLERY
     global REFERENCE_FACE_DISTANCE_SLIDER
-    global FACE_ANALYSER_DIRECTION_DROPDOWN
-    global FACE_ANALYSER_AGE_DROPDOWN
-    global FACE_ANALYSER_GENDER_DROPDOWN
 
     with gradio.Box():
-        reference_face_gallery_args = {
+        reference_face_gallery_args: Dict[str, Any] = {
             'label': 'REFERENCE FACE',
             'height': 120,
             'object_fit': 'cover',
@@ -57,48 +51,32 @@ def render() -> None:
             step=0.05,
             visible='reference' in roop.globals.face_recognition
         )
-        with gradio.Row():
-            FACE_ANALYSER_DIRECTION_DROPDOWN = gradio.Dropdown(
-                label='FACE ANALYSER DIRECTION',
-                choices=['none', 'left-right', 'right-left', 'top-bottom', 'bottom-top', 'small-large', 'large-small'],
-                value=roop.globals.face_analyser_direction or 'none'
-            )
-            FACE_ANALYSER_AGE_DROPDOWN = gradio.Dropdown(
-                label='FACE ANALYSER AGE',
-                choices=['none', 'children', 'teenager', 'adult', 'senior'],
-                value=roop.globals.face_analyser_age or 'none'
-            )
-            FACE_ANALYSER_GENDER_DROPDOWN = gradio.Dropdown(
-                label='FACE ANALYSER GENDER',
-                choices=['none', 'male', 'female'],
-                value=roop.globals.face_analyser_gender or 'none'
-            )
         ui.register_component('face_recognition_dropdown', FACE_RECOGNITION_DROPDOWN)
         ui.register_component('reference_face_position_gallery', REFERENCE_FACE_POSITION_GALLERY)
         ui.register_component('reference_face_distance_slider', REFERENCE_FACE_DISTANCE_SLIDER)
-        ui.register_component('face_analyser_direction_dropdown', FACE_ANALYSER_DIRECTION_DROPDOWN)
-        ui.register_component('face_analyser_age_dropdown', FACE_ANALYSER_AGE_DROPDOWN)
-        ui.register_component('face_analyser_gender_dropdown', FACE_ANALYSER_GENDER_DROPDOWN)
 
 
 def listen() -> None:
     FACE_RECOGNITION_DROPDOWN.select(update_face_recognition, inputs=FACE_RECOGNITION_DROPDOWN, outputs=[REFERENCE_FACE_POSITION_GALLERY, REFERENCE_FACE_DISTANCE_SLIDER])
     REFERENCE_FACE_POSITION_GALLERY.select(clear_and_update_face_reference_position)
     REFERENCE_FACE_DISTANCE_SLIDER.change(update_reference_face_distance, inputs=REFERENCE_FACE_DISTANCE_SLIDER)
-    component_names: List[ComponentName] = [
+    update_component_names: List[ComponentName] = [
         'target_file',
         'preview_frame_slider'
     ]
-    for component_name in component_names:
+    for component_name in update_component_names:
         component = ui.get_component(component_name)
         if component:
             component.change(update_face_reference_position, outputs=REFERENCE_FACE_POSITION_GALLERY)
-    FACE_ANALYSER_DIRECTION_DROPDOWN.select(lambda value: update_dropdown('face_analyser_direction', value), inputs=FACE_ANALYSER_DIRECTION_DROPDOWN, outputs=FACE_ANALYSER_DIRECTION_DROPDOWN)
-    FACE_ANALYSER_AGE_DROPDOWN.select(lambda value: update_dropdown('face_analyser_age', value), inputs=FACE_ANALYSER_AGE_DROPDOWN, outputs=FACE_ANALYSER_AGE_DROPDOWN)
-    FACE_ANALYSER_GENDER_DROPDOWN.select(lambda value: update_dropdown('face_analyser_gender', value), inputs=FACE_ANALYSER_GENDER_DROPDOWN, outputs=FACE_ANALYSER_GENDER_DROPDOWN)
-    FACE_ANALYSER_DIRECTION_DROPDOWN.select(update_face_reference_position, outputs=REFERENCE_FACE_POSITION_GALLERY)
-    FACE_ANALYSER_AGE_DROPDOWN.select(update_face_reference_position, outputs=REFERENCE_FACE_POSITION_GALLERY)
-    FACE_ANALYSER_GENDER_DROPDOWN.select(update_face_reference_position, outputs=REFERENCE_FACE_POSITION_GALLERY)
+    select_component_names: List[ComponentName] = [
+        'face_analyser_direction_dropdown',
+        'face_analyser_age_dropdown',
+        'face_analyser_gender_dropdown'
+    ]
+    for component_name in select_component_names:
+        component = ui.get_component(component_name)
+        if component:
+            component.select(update_face_reference_position, outputs=REFERENCE_FACE_POSITION_GALLERY)
 
 
 def update_face_recognition(face_recognition: FaceRecognition) -> Tuple[Update, Update]:
@@ -143,11 +121,3 @@ def extract_gallery_frames(reference_frame: Frame) -> List[Frame]:
         crop_frame = reference_frame[start_y:end_y, start_x:end_x]
         crop_frames.append(ui.normalize_frame(crop_frame))
     return crop_frames
-
-
-def update_dropdown(name: str, value: str) -> Update:
-    if value == 'none':
-        setattr(roop.globals, name, None)
-    else:
-        setattr(roop.globals, name, value)
-    return gradio.update(value=value)
