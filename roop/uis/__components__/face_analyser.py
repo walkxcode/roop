@@ -20,7 +20,7 @@ def render() -> None:
         with gradio.Row():
             FACE_ANALYSER_DIRECTION_DROPDOWN = gradio.Dropdown(
                 label='FACE ANALYSER DIRECTION',
-                choices=['none', 'left-right', 'right-left', 'top-bottom', 'bottom-top', 'small-large', 'large-small'],
+                choices=['left-right', 'right-left', 'top-bottom', 'bottom-top', 'small-large', 'large-small'],
                 value=roop.globals.face_analyser_direction or 'none'
             )
             FACE_ANALYSER_AGE_DROPDOWN = gradio.Dropdown(

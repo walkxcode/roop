@@ -38,7 +38,7 @@ def parse_args() -> None:
     program.add_argument('--keep-temp', help='keep temporary frames', dest='keep_temp', action='store_true')
     program.add_argument('--skip-audio', help='skip target audio', dest='skip_audio', action='store_true')
     program.add_argument('--face-recognition', help='face recognition method', dest='face_recognition', default='reference', choices=['reference', 'many'])
-    program.add_argument('--face-analyser-direction', help='direction used for the face analyser', dest='face_analyser_direction', choices=['left-right', 'right-left', 'top-bottom', 'bottom-top', 'small-large', 'large-small'])
+    program.add_argument('--face-analyser-direction', help='direction used for the face analyser', dest='face_analyser_direction', default='left-right', choices=['left-right', 'right-left', 'top-bottom', 'bottom-top', 'small-large', 'large-small'])
     program.add_argument('--face-analyser-age', help='age used for the face analyser', dest='face_analyser_age', choices=['child', 'teen', 'adult', 'senior'])
     program.add_argument('--face-analyser-gender', help='gender used for the face analyser', dest='face_analyser_gender', choices=['male', 'female'])
     program.add_argument('--reference-face-position', help='position of the reference face', dest='reference_face_position', type=int, default=0)

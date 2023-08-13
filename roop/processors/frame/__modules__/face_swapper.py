@@ -6,7 +6,7 @@ import threading
 import roop.globals
 import roop.processors.frame.core as frame_processors
 from roop.core import update_status
-from roop.face_analyser import get_one_face, get_many_faces, find_similar_face
+from roop.face_analyser import get_one_face, get_many_faces, find_similar_faces
 from roop.face_reference import get_face_reference, set_face_reference, clear_face_reference
 from roop.typing import Face, Frame
 from roop.utilities import conditional_download, resolve_relative_path, is_image, is_video
@@ -62,9 +62,10 @@ def swap_face(source_face: Face, target_face: Face, temp_frame: Frame) -> Frame:
 
 def process_frame(source_face: Face, reference_face: Face, temp_frame: Frame) -> Frame:
     if 'reference' in roop.globals.face_recognition:
-        target_face = find_similar_face(temp_frame, reference_face, roop.globals.reference_face_distance)
-        if target_face:
-            temp_frame = swap_face(source_face, target_face, temp_frame)
+        similar_faces = find_similar_faces(temp_frame, reference_face, roop.globals.reference_face_distance)
+        if similar_faces:
+            for similar_face in similar_faces:
+                temp_frame = swap_face(source_face, similar_face, temp_frame)
     if 'many' in roop.globals.face_recognition:
         many_faces = get_many_faces(temp_frame)
         if many_faces:

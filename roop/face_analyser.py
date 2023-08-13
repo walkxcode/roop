@@ -36,7 +36,7 @@ def get_one_face(frame: Frame, position: int = 0) -> Optional[Face]:
     return None
 
 
-def get_many_faces(frame: Frame) -> Optional[List[Face]]:
+def get_many_faces(frame: Frame) -> List[Face]:
     try:
         faces = get_face_analyser().get(frame)
         if roop.globals.face_analyser_direction:
@@ -47,18 +47,19 @@ def get_many_faces(frame: Frame) -> Optional[List[Face]]:
             faces = filter_by_gender(faces, roop.globals.face_analyser_gender)
         return faces
     except (AttributeError, ValueError):
-        return None
+        return []
 
 
-def find_similar_face(frame: Frame, reference_face: Face, face_distance: float) -> Optional[Face]:
+def find_similar_faces(frame: Frame, reference_face: Face, face_distance: float) -> List[Face]:
     many_faces = get_many_faces(frame)
+    similar_faces = []
     if many_faces:
         for face in many_faces:
             if hasattr(face, 'normed_embedding') and hasattr(reference_face, 'normed_embedding'):
                 current_face_distance = numpy.sum(numpy.square(face.normed_embedding - reference_face.normed_embedding))
                 if current_face_distance < face_distance:
-                    return face
-    return None
+                    similar_faces.append(face)
+    return similar_faces
 
 
 def sort_by_direction(faces: List[Face], direction: FaceAnalyserDirection) -> List[Face]:
