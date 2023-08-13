@@ -67,7 +67,7 @@ def create_video(target_path: str, fps: float = 30) -> bool:
         commands.extend(['-crf', str(output_video_quality)])
     if roop.globals.output_video_encoder in ['h264_nvenc', 'hevc_nvenc']:
         commands.extend(['-cq', str(output_video_quality)])
-    commands.extend(['-pix_fmt', 'yuv420p', '-vf', 'colorspace=bt709:iall=bt601-6-625:fast=1', '-y', temp_output_path])
+    commands.extend(['-pix_fmt', 'yuv420p', '-vf', 'colorspace=bt709:iall=bt601-6-625', '-y', temp_output_path])
     return run_ffmpeg(commands)
 
 
