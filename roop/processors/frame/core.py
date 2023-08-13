@@ -13,6 +13,8 @@ from roop.utilities import list_module_names
 
 FRAME_PROCESSORS_MODULES: List[ModuleType] = []
 FRAME_PROCESSORS_METHODS = [
+    'get_frame_processor',
+    'clear_frame_processor',
     'pre_check',
     'pre_start',
     'process_frame',
@@ -49,6 +51,8 @@ def get_frame_processors_modules(frame_processors: List[str]) -> List[ModuleType
 def clear_frame_processors_modules() -> None:
     global FRAME_PROCESSORS_MODULES
 
+    for frame_processor_module in get_frame_processors_modules(roop.globals.frame_processors):
+        frame_processor_module.clear_frame_processor()
     FRAME_PROCESSORS_MODULES = []
 
 

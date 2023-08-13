@@ -8,19 +8,19 @@ import roop.processors.frame.core as frame_processors
 from roop.typing import Frame, Face
 from roop.utilities import conditional_download, resolve_relative_path
 
-FRAME_ENHANCER = None
+FRAME_PROCESSOR = None
 THREAD_SEMAPHORE = threading.Semaphore()
 THREAD_LOCK = threading.Lock()
-NAME = 'ROOP.PROCESSORS.FRAME.FRAME_ENHANCER'
+NAME = 'ROOP.FRAME_PROCESSOR.FRAME_ENHANCER'
 
 
-def get_frame_enhancer() -> Any:
-    global FRAME_ENHANCER
+def get_frame_processor() -> Any:
+    global FRAME_PROCESSOR
 
     with THREAD_LOCK:
-        if FRAME_ENHANCER is None:
+        if FRAME_PROCESSOR is None:
             model_path = resolve_relative_path('../models/RealESRGAN_x4plus.pth')
-            FRAME_ENHANCER = RealESRGANer(
+            FRAME_PROCESSOR = RealESRGANer(
                 model_path=model_path,
                 model=RRDBNet(
                     num_in_ch=3,
@@ -36,13 +36,13 @@ def get_frame_enhancer() -> Any:
                 pre_pad=0,
                 scale=4
             )
-    return FRAME_ENHANCER
+    return FRAME_PROCESSOR
 
 
-def clear_frame_enhancer() -> None:
-    global FRAME_ENHANCER
+def clear_frame_processor() -> None:
+    global FRAME_PROCESSOR
 
-    FRAME_ENHANCER = None
+    FRAME_PROCESSOR = None
 
 
 def pre_check() -> bool:
@@ -56,12 +56,12 @@ def pre_start() -> bool:
 
 
 def post_process() -> None:
-    clear_frame_enhancer()
+    clear_frame_processor()
 
 
 def enhance_frame(temp_frame: Frame) -> Frame:
     with THREAD_SEMAPHORE:
-        temp_frame, _ = get_frame_enhancer().enhance(temp_frame, outscale=1)
+        temp_frame, _ = get_frame_processor().enhance(temp_frame, outscale=1)
     return temp_frame
 
 

@@ -10,31 +10,31 @@ from roop.face_analyser import get_many_faces
 from roop.typing import Frame, Face
 from roop.utilities import conditional_download, resolve_relative_path, is_image, is_video
 
-FACE_ENHANCER = None
+FRAME_PROCESSOR = None
 THREAD_SEMAPHORE = threading.Semaphore()
 THREAD_LOCK = threading.Lock()
-NAME = 'ROOP.PROCESSORS.FRAME.FACE_ENHANCER'
+NAME = 'ROOP.FRAME_PROCESSOR.FACE_ENHANCER'
 
 
-def get_face_enhancer() -> Any:
-    global FACE_ENHANCER
+def get_frame_processor() -> Any:
+    global FRAME_PROCESSOR
 
     with THREAD_LOCK:
-        if FACE_ENHANCER is None:
+        if FRAME_PROCESSOR is None:
             model_path = resolve_relative_path('../models/GFPGANv1.4.pth')
             # todo: set models path -> https://github.com/TencentARC/GFPGAN/issues/399
-            FACE_ENHANCER = GFPGANer(
+            FRAME_PROCESSOR = GFPGANer(
                 model_path=model_path,
                 upscale=1,
                 device=frame_processors.get_device()
             )
-    return FACE_ENHANCER
+    return FRAME_PROCESSOR
 
 
-def clear_face_enhancer() -> None:
-    global FACE_ENHANCER
+def clear_frame_processor() -> None:
+    global FRAME_PROCESSOR
 
-    FACE_ENHANCER = None
+    FRAME_PROCESSOR = None
 
 
 def pre_check() -> bool:
@@ -51,7 +51,7 @@ def pre_start() -> bool:
 
 
 def post_process() -> None:
-    clear_face_enhancer()
+    clear_frame_processor()
 
 
 def enhance_face(target_face: Face, temp_frame: Frame) -> Frame:
@@ -65,7 +65,7 @@ def enhance_face(target_face: Face, temp_frame: Frame) -> Frame:
     crop_frame = temp_frame[start_y:end_y, start_x:end_x]
     if crop_frame.size:
         with THREAD_SEMAPHORE:
-            _, _, crop_frame = get_face_enhancer().enhance(
+            _, _, crop_frame = get_frame_processor().enhance(
                 crop_frame,
                 paste_back=True
             )
