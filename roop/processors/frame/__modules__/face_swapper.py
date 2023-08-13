@@ -13,7 +13,7 @@ from roop.utilities import conditional_download, resolve_relative_path, is_image
 
 FRAME_PROCESSOR = None
 THREAD_LOCK = threading.Lock()
-NAME = 'ROOP.FRAME_PROCESSOR..FACE_SWAPPER'
+NAME = 'ROOP.FRAME_PROCESSOR.FACE_SWAPPER'
 
 
 def get_frame_processor() -> Any:
