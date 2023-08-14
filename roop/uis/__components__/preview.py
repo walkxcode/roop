@@ -93,6 +93,7 @@ def extract_preview_frame(temp_frame: Frame) -> Frame:
     if predict_frame(temp_frame):
         destroy()
     source_face = get_one_face(cv2.imread(roop.globals.source_path)) if roop.globals.source_path else None
+    temp_frame = reduce_preview_frame(temp_frame)
     if 'reference' in roop.globals.face_recognition and not get_face_reference():
         reference_frame = get_video_frame(roop.globals.target_path, roop.globals.reference_frame_number)
         reference_face = get_one_face(reference_frame, roop.globals.reference_face_position)
@@ -109,3 +110,10 @@ def extract_preview_frame(temp_frame: Frame) -> Frame:
     return temp_frame
 
 
+def reduce_preview_frame(temp_frame: Frame, max_height: int = 640) -> Frame:
+    height, width = temp_frame.shape[:2]
+    if height > max_height:
+        scale = max_height / height
+        max_width = int(width * scale)
+        temp_frame = cv2.resize(temp_frame, (max_width, max_height))
+    return temp_frame
