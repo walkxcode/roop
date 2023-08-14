@@ -1,0 +1,9 @@
+services:
+ roop-cpu:
+  build:
+   dockerfile: Dockerfile.cpu
+  command: ['python', 'run.py']
+  volumes:
+  - ./models:/roop/models
+  ports:
+  - 8000:7860

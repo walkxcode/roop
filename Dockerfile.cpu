@@ -1,0 +1,11 @@
+FROM python:3.10
+
+ENV GRADIO_SERVER_NAME=0.0.0.0
+WORKDIR /roop
+
+RUN apt-get update
+RUN apt-get install -y ffmpeg
+
+RUN git clone https://github.com/s0md3v/roop.git .
+RUN git checkout next
+RUN pip install -r requirements-docker.cpu.txt
