@@ -24,7 +24,7 @@ def init() -> None:
             ui_layout_module = load_ui_layout_module(ui_layout)
             ui_layout_module.render()
             ui_layout_module.listen()
-    ui.launch(inbrowser=True, show_api=False)
+    ui.launch(show_api=False)
 
 
 def load_ui_layout_module(ui_layout: str) -> Any:
