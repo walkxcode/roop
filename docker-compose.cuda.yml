@@ -2,7 +2,7 @@ services:
  roop-cuda:
   build:
    dockerfile: Dockerfile.cuda
-  command: ['python', 'run.py --execution-provider cuda']
+  command: ['python', 'run.py', '--execution-providers', 'cuda']
   volumes:
   - ./models:/roop/models
   expose:
