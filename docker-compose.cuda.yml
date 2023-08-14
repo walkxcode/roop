@@ -5,7 +5,7 @@ services:
   command: ['python', 'run.py', '--execution-providers', 'cuda']
   volumes:
   - ./models:/roop/models
-  expose:
+  ports:
   - 8000:7860
   deploy:
    resources:
