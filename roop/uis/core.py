@@ -19,7 +19,7 @@ UI_LAYOUT_METHODS = [
 
 
 def init() -> None:
-    with gradio.Blocks(theme=get_theme(), title=roop.metadata.name) as ui:
+    with gradio.Blocks(theme=get_theme(), title=roop.metadata.name + ' ' + roop.metadata.version) as ui:
         for ui_layout in roop.globals.ui_layouts:
             ui_layout_module = load_ui_layout_module(ui_layout)
             ui_layout_module.render()
