@@ -8,6 +8,8 @@ import subprocess
 import urllib
 from pathlib import Path
 from typing import List, Optional
+
+import onnxruntime
 from tqdm import tqdm
 
 import roop.globals
@@ -168,3 +170,12 @@ def list_module_names(path: str) -> Optional[List[str]]:
         files = os.listdir(path)
         return [Path(file).stem for file in files if not Path(file).stem.startswith('__')]
     return None
+
+
+def encode_execution_providers(execution_providers: List[str]) -> List[str]:
+    return [execution_provider.replace('ExecutionProvider', '').lower() for execution_provider in execution_providers]
+
+
+def decode_execution_providers(execution_providers: List[str]) -> List[str]:
+    return [provider for provider, encoded_execution_provider in zip(onnxruntime.get_available_providers(), encode_execution_providers(onnxruntime.get_available_providers()))
+            if any(execution_provider in encoded_execution_provider for execution_provider in execution_providers)]

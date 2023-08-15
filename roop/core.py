@@ -20,7 +20,7 @@ import roop.globals
 import roop.metadata
 from roop.predictor import predict_image, predict_video
 from roop.processors.frame.core import get_frame_processors_modules
-from roop.utilities import has_image_extension, is_image, is_video, detect_fps, create_video, extract_frames, get_temp_frame_paths, restore_audio, create_temp, move_temp, clean_temp, normalize_output_path, list_module_names
+from roop.utilities import has_image_extension, is_image, is_video, detect_fps, create_video, extract_frames, get_temp_frame_paths, restore_audio, create_temp, move_temp, clean_temp, normalize_output_path, list_module_names, decode_execution_providers, encode_execution_providers
 
 warnings.filterwarnings('ignore', category=FutureWarning, module='insightface')
 warnings.filterwarnings('ignore', category=UserWarning, module='torchvision')
@@ -84,15 +84,6 @@ def parse_args() -> None:
     roop.globals.execution_providers = decode_execution_providers(args.execution_providers)
     roop.globals.execution_thread_count = args.execution_thread_count
     roop.globals.execution_queue_count = args.execution_queue_count
-
-
-def encode_execution_providers(execution_providers: List[str]) -> List[str]:
-    return [execution_provider.replace('ExecutionProvider', '').lower() for execution_provider in execution_providers]
-
-
-def decode_execution_providers(execution_providers: List[str]) -> List[str]:
-    return [provider for provider, encoded_execution_provider in zip(onnxruntime.get_available_providers(), encode_execution_providers(onnxruntime.get_available_providers()))
-            if any(execution_provider in encoded_execution_provider for execution_provider in execution_providers)]
 
 
 def suggest_execution_providers() -> List[str]:

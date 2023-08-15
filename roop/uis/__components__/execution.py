@@ -6,6 +6,7 @@ import roop.globals
 from roop.face_analyser import clear_face_analyser
 from roop.processors.frame.core import clear_frame_processors_modules
 from roop.uis.typing import Update
+from roop.utilities import encode_execution_providers, decode_execution_providers
 
 EXECUTION_PROVIDERS_CHECKBOX_GROUP: Optional[gradio.CheckboxGroup] = None
 EXECUTION_THREAD_COUNT_SLIDER: Optional[gradio.Slider] = None
@@ -20,8 +21,8 @@ def render() -> None:
     with gradio.Box():
         EXECUTION_PROVIDERS_CHECKBOX_GROUP = gradio.CheckboxGroup(
             label='EXECUTION PROVIDERS',
-            choices=onnxruntime.get_available_providers(),
-            value=roop.globals.execution_providers
+            choices=encode_execution_providers(onnxruntime.get_available_providers()),
+            value=encode_execution_providers(roop.globals.execution_providers)
         )
         EXECUTION_THREAD_COUNT_SLIDER = gradio.Slider(
             label='EXECUTION THREAD COUNT',
@@ -48,7 +49,7 @@ def listen() -> None:
 def update_execution_providers(execution_providers: List[str]) -> Update:
     clear_face_analyser()
     clear_frame_processors_modules()
-    roop.globals.execution_providers = execution_providers
+    roop.globals.execution_providers = decode_execution_providers(execution_providers)
     return gradio.update(value=execution_providers)
 
 
