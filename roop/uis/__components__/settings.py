@@ -21,7 +21,7 @@ def render() -> None:
         )
         KEEP_TEMP_CHECKBOX = gradio.Checkbox(
             label='KEEP TEMP',
-            value=roop.globals.keep_fps
+            value=roop.globals.keep_temp
         )
         SKIP_AUDIO_CHECKBOX = gradio.Checkbox(
             label='SKIP AUDIO',
