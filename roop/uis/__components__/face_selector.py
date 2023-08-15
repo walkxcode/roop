@@ -47,7 +47,7 @@ def render() -> None:
         REFERENCE_FACE_DISTANCE_SLIDER = gradio.Slider(
             label='REFERENCE FACE DISTANCE',
             value=roop.globals.reference_face_distance,
-            maximum=2,
+            maximum=3,
             step=0.05,
             visible='reference' in roop.globals.face_recognition
         )

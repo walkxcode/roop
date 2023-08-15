@@ -4,8 +4,7 @@ import gradio
 import roop.globals
 from roop.core import start
 from roop.uis.typing import Update
-from roop.utilities import has_image_extension, has_video_extension, normalize_output_path
-
+from roop.utilities import is_image, is_video, normalize_output_path
 
 START_BUTTON: Optional[gradio.Button] = None
 CLEAR_BUTTON: Optional[gradio.Button] = None
@@ -42,9 +41,9 @@ def update() -> Tuple[Update, Update]:
     roop.globals.output_path = normalize_output_path(roop.globals.source_path, roop.globals.target_path, '..')
     if roop.globals.output_path:
         start()
-        if has_image_extension(roop.globals.output_path):
+        if is_image(roop.globals.output_path):
             return gradio.update(value=roop.globals.output_path, visible=True), gradio.update(value=None, visible=False)
-        if has_video_extension(roop.globals.output_path):
+        if is_video(roop.globals.output_path):
             return gradio.update(value=None, visible=False), gradio.update(value=roop.globals.output_path, visible=True)
     return gradio.update(value=None, visible=False), gradio.update(value=None, visible=False)
 

@@ -42,7 +42,7 @@ def parse_args() -> None:
     program.add_argument('--face-analyser-age', help='age used for the face analyser', dest='face_analyser_age', choices=['child', 'teen', 'adult', 'senior'])
     program.add_argument('--face-analyser-gender', help='gender used for the face analyser', dest='face_analyser_gender', choices=['male', 'female'])
     program.add_argument('--reference-face-position', help='position of the reference face', dest='reference_face_position', type=int, default=0)
-    program.add_argument('--reference-face-distance', help='distance between reference face and target face', dest='reference_face_distance', type=float, default=0.85)
+    program.add_argument('--reference-face-distance', help='distance between reference face and target face', dest='reference_face_distance', type=float, default=1.5)
     program.add_argument('--reference-frame-number', help='number of the reference frame', dest='reference_frame_number', type=int, default=0)
     program.add_argument('--trim-frame-start', help='start frame use for extraction', dest='trim_frame_start', type=int)
     program.add_argument('--trim-frame-end', help='end frame use for extraction', dest='trim_frame_end', type=int)
@@ -151,7 +151,7 @@ def start() -> None:
     # process image to image
     if has_image_extension(roop.globals.target_path):
         if predict_image(roop.globals.target_path):
-            destroy()
+            return
         shutil.copy2(roop.globals.target_path, roop.globals.output_path)
         # process frame
         for frame_processor_module in get_frame_processors_modules(roop.globals.frame_processors):
@@ -166,7 +166,7 @@ def start() -> None:
         return
     # process image to videos
     if predict_video(roop.globals.target_path):
-        destroy()
+        return
     update_status('Creating temporary resources...')
     create_temp(roop.globals.target_path)
     # extract frames

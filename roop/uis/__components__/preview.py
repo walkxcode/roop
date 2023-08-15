@@ -5,7 +5,6 @@ import gradio
 
 import roop.globals
 from roop.capturer import get_video_frame, get_video_frame_total
-from roop.core import destroy
 from roop.face_analyser import get_one_face
 from roop.face_reference import get_face_reference, set_face_reference
 from roop.predictor import predict_frame
@@ -91,7 +90,7 @@ def update(frame_number: int = 0) -> Tuple[Update, Update]:
 
 def extract_preview_frame(temp_frame: Frame) -> Frame:
     if predict_frame(temp_frame):
-        destroy()
+        return cv2.GaussianBlur(temp_frame, (99, 99), 0)
     source_face = get_one_face(cv2.imread(roop.globals.source_path)) if roop.globals.source_path else None
     temp_frame = reduce_preview_frame(temp_frame)
     if 'reference' in roop.globals.face_recognition and not get_face_reference():
