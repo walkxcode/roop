@@ -42,7 +42,7 @@ def detect_fps(target_path: str) -> float:
 
 def extract_frames(target_path: str, fps: float = 30) -> bool:
     temp_directory_path = get_temp_directory_path(target_path)
-    temp_frame_quality = roop.globals.temp_frame_quality * 31 // 100
+    temp_frame_quality = round(31 - (roop.globals.temp_frame_quality * 0.31))
     trim_frame_start = roop.globals.trim_frame_start
     trim_frame_end = roop.globals.trim_frame_end
     commands = ['-hwaccel', 'auto', '-i', target_path, '-q:v', str(temp_frame_quality), '-pix_fmt', 'rgb24']
@@ -61,7 +61,7 @@ def extract_frames(target_path: str, fps: float = 30) -> bool:
 def create_video(target_path: str, fps: float = 30) -> bool:
     temp_output_path = get_temp_output_path(target_path)
     temp_directory_path = get_temp_directory_path(target_path)
-    output_video_quality = (roop.globals.output_video_quality + 1) * 51 // 100
+    output_video_quality = round(51 - (roop.globals.output_video_quality * 0.5))
     commands = ['-hwaccel', 'auto', '-r', str(fps), '-i', os.path.join(temp_directory_path, '%04d.' + roop.globals.temp_frame_format), '-c:v', roop.globals.output_video_encoder]
     if roop.globals.output_video_encoder in ['libx264', 'libx265', 'libvpx']:
         commands.extend(['-crf', str(output_video_quality)])

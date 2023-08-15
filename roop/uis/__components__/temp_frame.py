@@ -1,10 +1,9 @@
-from typing import List, Optional
+from typing import Optional
 import gradio
 
 import roop.globals
-from roop.processors.frame.core import list_frame_processors_names, load_frame_processor_module, clear_frame_processors_modules
 from roop.typing import TempFrameFormat
-from roop.uis import core as ui
+
 from roop.uis.typing import Update
 
 TEMP_FRAME_FORMAT_DROPDOWN: Optional[gradio.Dropdown] = None
