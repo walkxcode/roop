@@ -1,6 +1,6 @@
 import gradio
 
-from roop.uis.__components__ import processor, execution, temp_frame, settings, source, target, preview, trim_frame, face_analyser, face_selector, output_settings, output
+from roop.uis.components import processor, execution, temp_frame, settings, source, target, preview, trim_frame, face_analyser, face_selector, output_settings, output
 
 
 def render() -> gradio.Blocks:

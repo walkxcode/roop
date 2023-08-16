@@ -92,7 +92,7 @@ def suggest_execution_providers_choices() -> List[str]:
 
 
 def suggest_ui_layouts_choices() -> List[str]:
-    return list_module_names('roop/uis/__layouts__')
+    return list_module_names('roop/uis/layouts')
 
 
 def suggest_execution_thread_count_default() -> int:

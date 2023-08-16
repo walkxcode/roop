@@ -27,7 +27,7 @@ FRAME_PROCESSORS_METHODS = [
 
 def load_frame_processor_module(frame_processor: str) -> Any:
     try:
-        frame_processor_module = importlib.import_module(f'roop.processors.frame.__modules__.{frame_processor}')
+        frame_processor_module = importlib.import_module(f'roop.processors.frame.modules.{frame_processor}')
         for method_name in FRAME_PROCESSORS_METHODS:
             if not hasattr(frame_processor_module, method_name):
                 raise NotImplementedError
@@ -57,7 +57,7 @@ def clear_frame_processors_modules() -> None:
 
 
 def list_frame_processors_names() -> Optional[List[str]]:
-    return list_module_names('roop/processors/frame/__modules__')
+    return list_module_names('roop/processors/frame/modules')
 
 
 def multi_process_frame(source_path: str, temp_frame_paths: List[str], process_frames: Callable[[str, List[str], Any], None], update: Callable[[], None]) -> None:
