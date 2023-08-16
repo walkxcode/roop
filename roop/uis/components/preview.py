@@ -109,7 +109,7 @@ def extract_preview_frame(temp_frame: Frame) -> Frame:
     return temp_frame
 
 
-def reduce_preview_frame(temp_frame: Frame, max_height: int = 640) -> Frame:
+def reduce_preview_frame(temp_frame: Frame, max_height: int = 480) -> Frame:
     height, width = temp_frame.shape[:2]
     if height > max_height:
         scale = max_height / height
