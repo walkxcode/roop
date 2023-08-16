@@ -2,6 +2,7 @@ from typing import Optional
 
 import gradio
 
+import roop.choices
 import roop.globals
 from roop.uis import core as ui
 from roop.uis.typing import Update
@@ -20,17 +21,17 @@ def render() -> None:
         with gradio.Row():
             FACE_ANALYSER_DIRECTION_DROPDOWN = gradio.Dropdown(
                 label='FACE ANALYSER DIRECTION',
-                choices=['left-right', 'right-left', 'top-bottom', 'bottom-top', 'small-large', 'large-small'],
-                value=roop.globals.face_analyser_direction or 'none'
+                choices=roop.choices.face_analyser_direction,
+                value=roop.globals.face_analyser_direction
             )
             FACE_ANALYSER_AGE_DROPDOWN = gradio.Dropdown(
                 label='FACE ANALYSER AGE',
-                choices=['none', 'child', 'teen', 'adult', 'senior'],
+                choices=['none'] + roop.choices.face_analyser_age,
                 value=roop.globals.face_analyser_age or 'none'
             )
             FACE_ANALYSER_GENDER_DROPDOWN = gradio.Dropdown(
                 label='FACE ANALYSER GENDER',
-                choices=['none', 'male', 'female'],
+                choices=['none'] + roop.choices.face_analyser_gender,
                 value=roop.globals.face_analyser_gender or 'none'
             )
         ui.register_component('face_analyser_direction_dropdown', FACE_ANALYSER_DIRECTION_DROPDOWN)

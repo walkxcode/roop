@@ -4,6 +4,7 @@ from time import sleep
 import cv2
 import gradio
 
+import roop.choices
 import roop.globals
 from roop.capturer import get_video_frame
 from roop.face_analyser import get_many_faces
@@ -40,7 +41,7 @@ def render() -> None:
             reference_face_gallery_args['value'] = extract_gallery_frames(reference_frame)
         FACE_RECOGNITION_DROPDOWN = gradio.Dropdown(
             label='FACE RECOGNITION',
-            choices=['reference', 'many'],
+            choices=roop.choices.face_recognition,
             value=roop.globals.face_recognition
         )
         REFERENCE_FACE_POSITION_GALLERY = gradio.Gallery(**reference_face_gallery_args)

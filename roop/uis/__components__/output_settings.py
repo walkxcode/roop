@@ -1,9 +1,9 @@
 from typing import Optional
 import gradio
 
+import roop.choices
 import roop.globals
 from roop.typing import OutputVideoEncoder
-
 from roop.uis.typing import Update
 
 OUTPUT_VIDEO_ENCODER_DROPDOWN: Optional[gradio.Dropdown] = None
@@ -17,7 +17,7 @@ def render() -> None:
     with gradio.Box():
         OUTPUT_VIDEO_ENCODER_DROPDOWN = gradio.Dropdown(
             label='OUTPUT VIDEO ENCODER',
-            choices=['libx264', 'libx265', 'libvpx-vp9', 'h264_nvenc', 'hevc_nvenc'],
+            choices=roop.choices.output_video_encoder,
             value=roop.globals.output_video_encoder
         )
         OUTPUT_VIDEO_QUALITY_SLIDER = gradio.Slider(

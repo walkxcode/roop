@@ -16,6 +16,7 @@ import onnxruntime
 import tensorflow
 
 
+import roop.choices
 import roop.globals
 import roop.metadata
 from roop.predictor import predict_image, predict_video
@@ -37,22 +38,22 @@ def parse_args() -> None:
     program.add_argument('--keep-fps', help='keep target fps', dest='keep_fps', action='store_true')
     program.add_argument('--keep-temp', help='keep temporary frames', dest='keep_temp', action='store_true')
     program.add_argument('--skip-audio', help='skip target audio', dest='skip_audio', action='store_true')
-    program.add_argument('--face-recognition', help='face recognition method', dest='face_recognition', default='reference', choices=['reference', 'many'])
-    program.add_argument('--face-analyser-direction', help='direction used for the face analyser', dest='face_analyser_direction', default='left-right', choices=['left-right', 'right-left', 'top-bottom', 'bottom-top', 'small-large', 'large-small'])
-    program.add_argument('--face-analyser-age', help='age used for the face analyser', dest='face_analyser_age', choices=['child', 'teen', 'adult', 'senior'])
-    program.add_argument('--face-analyser-gender', help='gender used for the face analyser', dest='face_analyser_gender', choices=['male', 'female'])
+    program.add_argument('--face-recognition', help='face recognition method', dest='face_recognition', default='reference', choices=roop.choices.face_recognition)
+    program.add_argument('--face-analyser-direction', help='direction used for the face analyser', dest='face_analyser_direction', default='left-right', choices=roop.choices.face_analyser_direction)
+    program.add_argument('--face-analyser-age', help='age used for the face analyser', dest='face_analyser_age', choices=roop.choices.face_analyser_age)
+    program.add_argument('--face-analyser-gender', help='gender used for the face analyser', dest='face_analyser_gender', choices=roop.choices.face_analyser_gender)
     program.add_argument('--reference-face-position', help='position of the reference face', dest='reference_face_position', type=int, default=0)
     program.add_argument('--reference-face-distance', help='distance between reference face and target face', dest='reference_face_distance', type=float, default=1.5)
     program.add_argument('--reference-frame-number', help='number of the reference frame', dest='reference_frame_number', type=int, default=0)
     program.add_argument('--trim-frame-start', help='start frame use for extraction', dest='trim_frame_start', type=int)
     program.add_argument('--trim-frame-end', help='end frame use for extraction', dest='trim_frame_end', type=int)
-    program.add_argument('--temp-frame-format', help='image format used for frame extraction', dest='temp_frame_format', default='jpg', choices=['jpg', 'png'])
+    program.add_argument('--temp-frame-format', help='image format used for frame extraction', dest='temp_frame_format', default='jpg', choices=roop.choices.temp_frame_format)
     program.add_argument('--temp-frame-quality', help='image quality used for frame extraction', dest='temp_frame_quality', type=int, default=100, choices=range(101), metavar='[0-100]')
-    program.add_argument('--output-video-encoder', help='encoder used for the output video', dest='output_video_encoder', default='libx264', choices=['libx264', 'libx265', 'libvpx-vp9', 'h264_nvenc', 'hevc_nvenc'])
+    program.add_argument('--output-video-encoder', help='encoder used for the output video', dest='output_video_encoder', default='libx264', choices=roop.choices.output_video_encoder)
     program.add_argument('--output-video-quality', help='quality used for the output video', dest='output_video_quality', type=int, default=90, choices=range(101), metavar='[0-100]')
     program.add_argument('--max-memory', help='maximum amount of RAM in GB', dest='max_memory', type=int)
-    program.add_argument('--execution-providers', help='list of available execution providers (choices: cpu, ...)', dest='execution_providers', default=['cpu'], choices=suggest_execution_providers(), nargs='+')
-    program.add_argument('--execution-thread-count', help='number of execution threads', dest='execution_thread_count', type=int, default=suggest_execution_thread_count())
+    program.add_argument('--execution-providers', help='list of available execution providers (choices: cpu, ...)', dest='execution_providers', default=['cpu'], choices=suggest_execution_providers_choices(), nargs='+')
+    program.add_argument('--execution-thread-count', help='number of execution threads', dest='execution_thread_count', type=int, default=suggest_execution_thread_count_default())
     program.add_argument('--execution-queue-count', help='number of execution queries', dest='execution_queue_count', type=int,  default=1)
     program.add_argument('-v', '--version', action='version', version=f'{roop.metadata.name} {roop.metadata.version}')
 
@@ -86,15 +87,15 @@ def parse_args() -> None:
     roop.globals.execution_queue_count = args.execution_queue_count
 
 
-def suggest_execution_providers() -> List[str]:
+def suggest_execution_providers_choices() -> List[str]:
     return encode_execution_providers(onnxruntime.get_available_providers())
 
 
-def suggest_ui_layouts() -> List[str]:
+def suggest_ui_layouts_choices() -> List[str]:
     return list_module_names('roop/uis/__layouts__')
 
 
-def suggest_execution_thread_count() -> int:
+def suggest_execution_thread_count_default() -> int:
     if 'CUDAExecutionProvider' in onnxruntime.get_available_providers():
         return 8
     return 1

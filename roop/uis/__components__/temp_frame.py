@@ -1,6 +1,7 @@
 from typing import Optional
 import gradio
 
+import roop.choices
 import roop.globals
 from roop.typing import TempFrameFormat
 
@@ -17,7 +18,7 @@ def render() -> None:
     with gradio.Box():
         TEMP_FRAME_FORMAT_DROPDOWN = gradio.Dropdown(
             label='TEMP FRAME FORMAT',
-            choices=['jpg', 'png'],
+            choices=roop.choices.temp_frame_format,
             value=roop.globals.temp_frame_format
         )
         TEMP_FRAME_QUALITY_SLIDER = gradio.Slider(

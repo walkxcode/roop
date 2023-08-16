@@ -19,7 +19,7 @@ UI_LAYOUT_METHODS = [
 
 
 def init() -> None:
-    with gradio.Blocks(theme=get_theme(), title=roop.metadata.name + ' ' + roop.metadata.version) as ui:
+    with gradio.Blocks(theme=get_theme(), title=f'{roop.metadata.name} {roop.metadata.version}') as ui:
         for ui_layout in roop.globals.ui_layouts:
             ui_layout_module = load_ui_layout_module(ui_layout)
             ui_layout_module.render()
@@ -34,7 +34,7 @@ def load_ui_layout_module(ui_layout: str) -> Any:
             if not hasattr(ui_layout_module, method_name):
                 raise NotImplementedError
     except ModuleNotFoundError:
-        sys.exit(f'UI layout {ui_layout} could be not loaded.')
+        sys.exit(f'UI layout {ui_layout} could not be loaded.')
     except NotImplementedError:
         sys.exit(f'UI layout {ui_layout} not implemented correctly.')
     return ui_layout_module
